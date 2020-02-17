@@ -4,8 +4,6 @@
 # Matt Nicholson
 # 14 Feb 2020
 
-library(ini)
-
 f_in <- "C:\\Users\\nich980\\code\\temp\\hectordata\\template.ini"
 scenario_name <- "ssp245"
 emission_file <- "SSP245_emissions.csv"
