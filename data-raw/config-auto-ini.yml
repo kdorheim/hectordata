@@ -1,0 +1,93 @@
+# Config file for automated Hector INI input file creation script
+#
+# Matt Nicholson
+# 11 Feb 2020
+# 
+# Notes
+# ------
+# 
+---
+esm-bell-750:
+  emission_file: esm-bell-750_emissions.csv
+  concentration_file: esm-bell-750_concentrations.csv
+  
+esm-bell-1000:
+  emission_file: esm-bell-1000_emissions.csv
+  concentration_file: esm-bell-1000_concentrations.csv
+
+esm-bell-2000:
+  emission_file: esm-bell-2000_emissions.csv
+  concentration_file: esm-bell-2000_concentrations.csv
+  
+esm-pi-CO2pulse:
+  emission_file: esm-pi-CO2pulse_emissions.csv
+  concentration_file: esm-pi-CO2pulse_concentrations.csv
+
+esm-pi-cdr-pulse:
+  emission_file: esm-pi-cdr-pulse_emissions.csv
+  concentration_file: esm-pi-cdr-pulse_concentrations.csv
+
+esm-pi-control:
+  emission_file: esm-pi-control_emissions.csv
+  concentration_file: esm-pi-control_concentrations.csv
+  
+historical:
+  emission_file: historical_emissions.csv
+  concentration_file: historical_concentrations.csv
+  
+historical-cmip5:
+  emission_file: historical-cmip5_emissions.csv
+  concentration_file: historical-cmip5_concentrations.csv
+
+rcp26:
+  emission_file: RCP26_emissions.csv
+  concentration_file: RCP26_concentrations.csv
+
+rcp45:
+  emission_file: RCP45_emissions.csv
+  concentration_file: RCP45_concentrations.csv
+  
+rcp60:
+  emission_file: RCP60_emissions.csv
+  concentration_file: RCP60_concentrations.csv
+  
+rcp85:
+  emission_file: RCP85_emissions.csv
+  concentration_file: RCP85_concentrations.csv
+
+ssp370:
+  emission_file: SSP370_emissions.csv
+  concentration_file: SSP370_concentrations.csv
+
+ssp370-lowNTCF:
+  emission_file: SSP370-lowNTCF_emissions.csv
+  concentration_file: SSP370-lowNTCF_concentrations.csv
+  
+ssp119:
+  emission_file: SSP119_emissions.csv
+  concentration_file: SSP119_concentrations.csv
+
+ssp126:
+  emission_file: SSP126_emissions.csv
+  concentration_file: SSP126_concentrations.csv
+
+ssp245:
+  emission_file: SSP245_emissions.csv
+  concentration_file: SSP245_concentrations.csv
+
+ssp434:
+  emission_file: SSP434_emissions.csv
+  concentration_file: SSP434_concentrations.csv
+
+ssp460:
+  emission_file: SSP460_emissions.csv
+  concentration_file: SSP460_concentrations.csv
+ 
+ssp534-over:
+  emission_file: SSP534-over_emissions.csv
+  concentration_file: SSP534-over_concentrations.csv
+
+ssp585:
+  emission_file: SSP585_emissions.csv
+  concentration_file: SSP585_concentrations.csv
+  
