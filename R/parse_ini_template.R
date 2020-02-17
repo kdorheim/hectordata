@@ -4,7 +4,6 @@
 # Matt Nicholson
 # 14 Feb 2020
 
-f_in <- "C:\\Users\\nich980\\code\\temp\\hectordata\\template.ini"
 scenario_name <- "ssp245"
 emission_file <- "SSP245_emissions.csv"
 
@@ -16,9 +15,8 @@ emission_file <- "SSP245_emissions.csv"
 #'
 #' TODO:
 #'   * Add export tag
-#'   * Remove template file param after it's loaded into package data
-create_scenario_ini <- function(scenario, emission_file, template) {
-  ini_template  <- readLines(f_in)
+#'   * Where to put new .ini files?
+create_scenario_ini <- function(scenario, emission_file) {
   scenario_ini <- gsub("var_emissionsPath", emission_file, ini_template)
   f_out <- paste0("hector_", scenario_name, ".ini")
   cat(scenario_ini, file=f_out, sep="\n")
