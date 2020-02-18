@@ -9,11 +9,11 @@ test_that("parse_emission_fname returns the proper emissions filename", {
 })
 
 test_that("parse_ini_fname returns the proper Hector input .ini filename", {
-  expect_equal(parse_emission_fname("rcp45"), "hector_rcp45.ini")
-  expect_equal(parse_emission_fname("rcp80"), "hector_rcp80.ini")
-  expect_equal(parse_emission_fname("ssp245"), "hector_ssp245.ini")
-  expect_equal(parse_emission_fname("ssp434"), "hector_ssp434.ini")
-  expect_equal(parse_emission_fname("esm-bell-1000"), "hector_esm-bell-1000.ini")
+  expect_equal(parse_ini_fname("rcp45"), "hector_rcp45.ini")
+  expect_equal(parse_ini_fname("rcp80"), "hector_rcp80.ini")
+  expect_equal(parse_ini_fname("ssp245"), "hector_ssp245.ini")
+  expect_equal(parse_ini_fname("ssp434"), "hector_ssp434.ini")
+  expect_equal(parse_ini_fname("esm-bell-1000"), "hector_esm-bell-1000.ini")
 })
 
 test_that("Hector .ini file created by create_scenario_ini for RCP45", {
