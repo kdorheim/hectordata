@@ -17,6 +17,7 @@
 #' TODO:
 #'   * Add export tag?
 create_scenario_ini <- function(scenario) {
+  input_dir <- file.path(system.file('input', package='hectordata'))
   # Create the name of the emissions file corresponding to the scenario
   emissions_file <- parse_emission_fname(scenario)
 
@@ -27,7 +28,7 @@ create_scenario_ini <- function(scenario) {
   scenario_ini <- gsub("var_emissionsPath", emissions_file, scenario_ini)
 
   ini_name <- parse_ini_fname(scenario)
-  f_out <- here("intput", ini_name)
+  f_out <- file.path(input_dir, ini_name)
   # cat(scenario_ini, file=f_out, sep="\n")
   writeLines(scenario_ini, con=f_out, sep="\n")
   invisible(f_out)
