@@ -11,6 +11,6 @@
 # variables missing).
 devtools::load_all()
 
-ini_template <- readLines("hector_template.ini")
+ini_template <- readLines("data-raw/hector_template.ini")
 
 usethis::use_data(ini_template, internal = TRUE, overwrite = TRUE)
