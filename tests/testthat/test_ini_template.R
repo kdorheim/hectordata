@@ -19,25 +19,23 @@ test_that("parse_ini_fname returns the proper Hector input .ini filename", {
 })
 
 test_that("Hector .ini file created by create_scenario_ini for RCP45", {
-  scenario <- "rcp45"
+  scenarios <- c("rcp45", "ssp245")
+  hector_inputdir <- system.file('input', package='hector')
   # Create a new .ini file named "hector_rcp45_test.ini"
-  test_scenario <- paste0(scenario, "_test")
+  test_scenario <- paste0("test_", scenario)
   create_scenario_ini(test_scenario)
+
   # Compare the new RCP45 .ini file to the default Hector RCP45 .ini file
-  new_ini     <- system.file(inputdir, parse_ini_fname(test_scenario), package = "hectordata")
-  control_ini <- system.file(inputdir, "hector_rcp45.ini", package = "hector")
-  expect_true(all.equal(readLines(new_ini), readLines(control_ini)))
-  file.remove(new_ini)  # Remove hector_rcp45_test.ini
+  new_ini_name <- parse_ini_fname(test_scenario)
+  new_ini_path <- file.path(inputdir, new_ini_name)
+  new_ini      <- readLines( file(new_ini_path, open="w+") )
+
+  ctrl_ini_name <- parse_ini_fname(scenario)
+  ctrl_ini_path <- system.file(hector_inputdir, ctrl_ini_name)
+  ctrl_ini      <- readLines( file(ctrl_ini_path, open="w+") )
+
+  expect_true(all.equal(new_ini, ctrl_ini))
+  # file.remove(new_ini_path)  # Remove hector_rcp45_test.ini (Raises Warning!)
 })
 
-test_that("Hector .ini file created by create_scenario_ini for SSP245", {
-  scenario <- "ssp245"
-  # Create a new .ini file named "hector_ssp245_test.ini"
-  test_scenario <- paste0(scenario, "_test")
-  create_scenario_ini(test_scenario)
-  # Compare the new SSP245 .ini file to the default Hector SSP245 .ini file
-  new_ini     <- system.file("input", parse_ini_fname(test_scenario), package = "hectordata")
-  control_ini <- system.file("input", parse_ini_fname(scenario), package = "hector")
-  expect_true(all.equal(readLines(new_ini), readLines(control_ini)))
-  file.remove(new_ini)  # Remove hector_ssp245_test.ini
-})
+
