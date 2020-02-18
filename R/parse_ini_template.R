@@ -7,9 +7,9 @@
 #' Create a new Hector input .ini file for a given scenario. New .ini files are
 #' written to hectordata/inst/input.
 #'
-#' @param scenario String, name of the scenario for which an input file is being created.
-#' @param emission_file String, name of the emission file for the given scenario.
-#' @return None, writes a new file.
+#' @param scenario Character vector; Name of the scenario for which an input file is being created.
+#' @param emission_file Character vector; Name of the emission file for the given scenario.
+#' @return Character vector; Path of the new .ini file
 #'
 #' @example
 #' create_scenario_ini("rcp45")
@@ -32,8 +32,11 @@ create_scenario_ini <- function(scenario) {
   invisible(f_out)
 }
 
-
 #' Parse the name of the emissions file for a given scenario.
+#'
+#' The filename will be of the format: "<scenario>_emissions.csv".
+#' Note: the letters in the scenario name will be converted to upper-case to follow
+#' existing Hector input file naming conventions.
 #'
 #' @param scenario Character vector; Name of the scenario.
 #' @return Character vector; Name of the emissions file corresponding to the scenario
@@ -48,6 +51,8 @@ parse_emission_fname <- function(scenario) {
 }
 
 #' Parse the filename of a Hector input .ini file for a given scenario
+#'
+#' The filename will be of the format: "hector_<scenario>.ini"
 #'
 #' @param scenario Character vector; Name of the scenario.
 #' @return Character vector; Name of the emissions file corresponding to the scenario
