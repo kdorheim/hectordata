@@ -1,3 +1,7 @@
+# Helper functions for tests in test_create_ini.R
+# Matt Nicholson
+# 20 Feb 2020
+
 fetch_hector_ini <- function(scenario) {
   hector_ini_name <- parse_ini_fname(scenario)
   hector_ini_path <- system.file('input', hector_ini_name, package='hector')
