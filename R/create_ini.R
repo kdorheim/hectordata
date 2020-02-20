@@ -1,5 +1,6 @@
-# This file reads a Hector input .ini file template and creates a new input .ini
-# for given CMIP6 scenario(s)
+# This file contains functions that create a Hector .ini input file for a given
+# scenario. The style of the created .ini files match that of the existing
+# input .ini files found in the Hector R package.
 #
 # Matt Nicholson
 # 14 Feb 2020
