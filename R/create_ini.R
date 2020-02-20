@@ -9,17 +9,23 @@
 #' written to hectordata/inst/input.
 #'
 #' @param scenario Character vector; Name of the scenario for which an input file is being created.
-#' @param emission_file Character vector; Name of the emission file for the given scenario.
+#' @param check_em Boolean, optional; Whether or not to check for the existence of the scenario's
+#' emissions file before creating the scenario .ini file. If the emissions file is not found
+#' in the correct directory (input/emissions), an error is raised. Default is TRUE.
 #' @return Character vector; Path of the new .ini file
 #'
 #' @examples
 #' create_scenario_ini("rcp45")
 #'
 #' @export
-create_scenario_ini <- function(scenario) {
+create_scenario_ini <- function(scenario, check_em = TRUE) {
   input_dir <- file.path(system.file('input', package='hectordata'))
   # Create the name of the emissions file corresponding to the scenario
   emissions_file <- parse_emission_fname(scenario)
+  # Check for the existence of the emissions file, if needed
+  if (check_em) {
+    check_emissions_file(scenario, emissions_file, input_dir)
+  }
   # Replace placeholder strings in the template ini
   scenario_ini <- replace_ini_vars(scenario, emissions_file)
   # Construct new ini filename and path; write to file
@@ -64,6 +70,8 @@ write_file <- function(file_lines, out_path) {
 #' existing Hector input file naming conventions.
 #'
 #' @param scenario Character vector; Name of the scenario.
+#' @param prefix Boolean, default is TRUE; If TRUE, prepend "emissions/" to the
+#' parsed emissions file name. If FALSE, return only the emissions file name.
 #' @return Character vector; Name of the emissions file corresponding to the scenario
 #'
 #' @examples
@@ -71,10 +79,14 @@ write_file <- function(file_lines, out_path) {
 #'
 #' @keywords internal
 #' @export
-parse_emission_fname <- function(scenario) {
+parse_emission_fname <- function(scenario, prefix = TRUE) {
   # Cast to uppercase to follow existing Hector .ini conventions
   scen_upper <- toupper(scenario)
-  f_name <- paste0("emissions/", scen_upper, "_emissions.csv")
+  if (prefix) {
+    f_name <- paste0("emissions/", scen_upper, "_emissions.csv")
+  } else {
+    f_name <- paste0(scen_upper, "_emissions.csv")
+  }
   invisible(f_name)
 }
 
@@ -93,4 +105,22 @@ parse_emission_fname <- function(scenario) {
 parse_ini_fname <- function(scenario) {
   ini_name <- paste0("hector_", scenario, ".ini")
   invisible(ini_name)
+}
+
+#' Check the Hectordata input directory to see if the emissions .csv file
+#' corresponding to the given scenario exists. If the emissions file is not
+#' found, an error is raised.
+#'
+#' @param scenario Character vector; Name of the scenario.
+#' @param emission_fname Character vector; Name of the emission file for the given scenario,
+#' with prepended "emissions/"
+#' @param input_dir Character vector; Path of the root input directory
+#' @keywords internal
+#' @export
+check_emissions_file <- function(scenario, emission_fname, input_dir) {
+  em_path <- file.path(input_dir, emission_fname)
+  if (!file.exists(em_path)) {
+    err_msg <- paste0('Scenario emissions file not found: ', em_path)
+    stop(err_msg)
+  }
 }

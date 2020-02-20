@@ -1,5 +1,6 @@
 context("Create Hector .ini files from template")
 
+input_dir <- system.file('input', package='hectordata')
 scenarios <- c("rcp45", "rcp85")
 
 test_that("parse_emission_fname returns the proper emissions filename", {
@@ -46,4 +47,12 @@ test_that("Hector .ini file created by replace_ini_vars", {
   })
 })
 
+test_that("create_scenario_ini raises an error when emissions file is not found", {
+  lapply(scenarios, function(scenario) {
+    em_fname <- parse_emission_fname(scenario)
+    em_path <- file.path(input_dir, em_fname)
+    err_msg <- paste0('Scenario emissions file not found: ', em_path)
+    expect_error(create_scenario_ini(scenario), err_msg)
+  })
+})
 
