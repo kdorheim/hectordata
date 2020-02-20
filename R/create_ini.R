@@ -20,11 +20,11 @@ create_scenario_ini <- function(scenario) {
   input_dir <- file.path(system.file('input', package='hectordata'))
   # Create the name of the emissions file corresponding to the scenario
   emissions_file <- parse_emission_fname(scenario)
+  # Replace placeholder strings in the template ini
   scenario_ini <- replace_ini_vars(scenario, emissions_file)
-
+  # Construct new ini filename and path; write to file
   ini_name <- parse_ini_fname(scenario)
   ini_path <- file.path(input_dir, ini_name)
-  # cat(scenario_ini, file=f_out, sep="\n")
   write_file(scenario_ini, ini_path)
   invisible(ini_path)
 }
