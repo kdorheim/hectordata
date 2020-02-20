@@ -1,6 +1,6 @@
-context("Basic template .ini file I/O")
+context("Create Hector .ini files from template")
 
-inputdir <- system.file('input', package='hectordata')
+scenarios <- c("rcp45", "rcp85")
 
 test_that("parse_emission_fname returns the proper emissions filename", {
   expect_equal(parse_emission_fname("rcp45"), "emissions/RCP45_emissions.csv")
@@ -18,24 +18,32 @@ test_that("parse_ini_fname returns the proper Hector input .ini filename", {
   expect_equal(parse_ini_fname("esm-bell-1000"), "hector_esm-bell-1000.ini")
 })
 
-test_that("Hector .ini file created by create_scenario_ini for RCP45", {
-  scenarios <- c("rcp45", "ssp245")
-  hector_inputdir <- system.file('input', package='hector')
-  # Create a new .ini file named "hector_rcp45_test.ini"
-  test_scenario <- paste0("test_", scenario)
-  create_scenario_ini(test_scenario)
+test_that("helper function that fetches .ini file from installed Hector package", {
+  lapply(scenarios, function(scenario) {
+    ini <- fetch_hector_ini(scenario)
+    lbl <- paste0("Parsed default Hector ", scenario, " ini file having length > 0")
+    expect_true(length(ini) > 0, label=lbl)
+  })
+})
 
-  # Compare the new RCP45 .ini file to the default Hector RCP45 .ini file
-  new_ini_name <- parse_ini_fname(test_scenario)
-  new_ini_path <- file.path(inputdir, new_ini_name)
-  new_ini      <- readLines( file(new_ini_path, open="w+") )
-
-  ctrl_ini_name <- parse_ini_fname(scenario)
-  ctrl_ini_path <- system.file(hector_inputdir, ctrl_ini_name)
-  ctrl_ini      <- readLines( file(ctrl_ini_path, open="w+") )
-
-  expect_true(all.equal(new_ini, ctrl_ini))
-  # file.remove(new_ini_path)  # Remove hector_rcp45_test.ini (Raises Warning!)
+test_that("Hector .ini file created by replace_ini_vars", {
+  lapply(scenarios, function(scenario) {
+    test_em_file <- parse_emission_fname(scenario)
+    test_ini <- replace_ini_vars(scenario, test_em_file)
+    ctrl_ini <- fetch_hector_ini(scenario)
+    # --- Sanity check -----------------------------------------
+    expect_true(length(test_ini) != 0)
+    expect_true(length(ctrl_ini) != 0)
+    expect_equal(length(test_ini), length(ctrl_ini))
+    # --- Compare the lines containing emissions file names ----
+    test_em_lines <- get_emission_lines(test_ini)
+    ctrl_em_lines <- get_emission_lines(ctrl_ini)
+    expect_true(all.equal(test_em_lines, ctrl_em_lines))
+    # --- Compare the run names --------------------------------
+    test_run_name <- get_run_name(test_ini)
+    ctrl_run_name <- get_run_name(ctrl_ini)
+    expect_true(all.equal(test_run_name, ctrl_run_name))
+  })
 })
 
 

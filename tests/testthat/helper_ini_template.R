@@ -1,8 +1,7 @@
 fetch_hector_ini <- function(scenario) {
-  hector_inputdir <- system.file('input', package='hector')
   hector_ini_name <- parse_ini_fname(scenario)
-  hector_ini_path <- system.file(hector_inputdir, hector_ini_name)
-  hector_ini      <- readLines( file(hector_ini_path, open="w+") )
+  hector_ini_path <- system.file('input', hector_ini_name, package='hector')
+  hector_ini      <- readLines( file(hector_ini_path, "r") )
   invisible(hector_ini)
 }
 

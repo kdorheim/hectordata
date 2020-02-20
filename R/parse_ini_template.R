@@ -20,18 +20,37 @@ create_scenario_ini <- function(scenario) {
   input_dir <- file.path(system.file('input', package='hectordata'))
   # Create the name of the emissions file corresponding to the scenario
   emissions_file <- parse_emission_fname(scenario)
-
-  # Replace the "var_runName" placeholder with the scenario name
-  scenario_ini <- gsub("var_runName", scenario, ini_template)
-
-  # Replace the "var_emissionsPath" placeholder with the name of the emissions file
-  scenario_ini <- gsub("var_emissionsPath", emissions_file, scenario_ini)
+  scenario_ini <- replace_ini_vars(scenario, emissions_file)
 
   ini_name <- parse_ini_fname(scenario)
-  f_out <- file.path(input_dir, ini_name)
+  ini_path <- file.path(input_dir, ini_name)
   # cat(scenario_ini, file=f_out, sep="\n")
-  writeLines(scenario_ini, con=f_out, sep="\n")
-  invisible(f_out)
+  write_file(scenario_ini, ini_path)
+  invisible(ini_path)
+}
+
+#' Replace the placeholder variables in the template Hector .ini file with the
+#' propper scenario variables
+#'
+#' Helper function for create_scenario_ini
+#'
+#' @param scenario Character vector; Name of the scenario for which an input file is being created.
+#' @param emission_file Character vector; Name of the emission file for the given scenario.
+#' @return Character vector; Lines of the scenario .ini
+replace_ini_vars <- function(scenario, emissions_file) {
+  # Replace the "var_runName" placeholder with the scenario name
+  scenario_ini <- gsub("var_runName", scenario, ini_template)
+  # Replace the "var_emissionsPath" placeholder with the name of the emissions file
+  scenario_ini <- gsub("var_emissionsPath", emissions_file, scenario_ini)
+  invisible(scenario_ini)
+}
+
+#' Write a character vector to file
+#'
+#' @param file_lines Character vector; Lines of the file to write
+#' @param out_path Character vector; Path of the file to write
+write_file <- function(file_lines, out_path) {
+  writeLines(file_lines, con=out_path, sep="\n")
 }
 
 #' Parse the name of the emissions file for a given scenario.
@@ -46,10 +65,10 @@ create_scenario_ini <- function(scenario) {
 #' @examples
 #' parse_emission_fname("rcp45")
 parse_emission_fname <- function(scenario) {
-  # Cast to uppercase to follow existing Hector convention
+  # Cast to uppercase to follow existing Hector .ini conventions
   scen_upper <- toupper(scenario)
-  f_name <- paste0(scen_upper, "_emissions.csv")
-  f_path <- file.path("emissions", f_name)
+  f_name <- paste0("emissions/", scen_upper, "_emissions.csv")
+  invisible(f_name)
 }
 
 #' Parse the filename of a Hector input .ini file for a given scenario
@@ -63,4 +82,5 @@ parse_emission_fname <- function(scenario) {
 #' parse_ini_fname("rcp45")
 parse_ini_fname <- function(scenario) {
   ini_name <- paste0("hector_", scenario, ".ini")
+  invisible(ini_name)
 }
