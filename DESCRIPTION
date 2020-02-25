@@ -4,12 +4,13 @@ Title: Input Data for The Hector Simple Climate Model
 Version: 0.1.0
 Authors@R: c(person("Matt", "Nicholson", email = "matthew.nicholson@pnnl.gov", role = c("aut", "cre")),
 	           person("Kalyn", "Dorheim", email = "kalyn.dorheim@pnnl.gov", role = "aut"))
-Description: A package to manage input for the simple mlimate model Hector. It 
+Description: A package to manage input for the simple climate model Hector. It 
     allows users to easily create new input .ini files to run Hector for 
     a variety of scenarios. 
 License: GPL-3
 Encoding: UTF-8
-LazyData: true
+Depends: R (>= 2.10)
 Suggests:
     testthat
+LazyData: true
 RoxygenNote: 6.1.1

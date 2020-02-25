@@ -14,9 +14,6 @@
 #' in the correct directory (input/emissions), an error is raised. Default is TRUE.
 #' @return Character vector; Path of the new .ini file
 #'
-#' @examples
-#' create_scenario_ini("rcp45")
-#'
 #' @export
 create_scenario_ini <- function(scenario, check_em = TRUE) {
   input_dir <- file.path(system.file('input', package='hectordata'))
@@ -74,9 +71,6 @@ write_file <- function(file_lines, out_path) {
 #' parsed emissions file name. If FALSE, return only the emissions file name.
 #' @return Character vector; Name of the emissions file corresponding to the scenario
 #'
-#' @examples
-#' parse_emission_fname("rcp45")
-#'
 #' @keywords internal
 #' @export
 parse_emission_fname <- function(scenario, prefix = TRUE) {
@@ -96,9 +90,6 @@ parse_emission_fname <- function(scenario, prefix = TRUE) {
 #'
 #' @param scenario Character vector; Name of the scenario.
 #' @return Character vector; Name of the emissions file corresponding to the scenario
-#'
-#' @examples
-#' parse_ini_fname("rcp45")
 #'
 #' @keywords internal
 #' @export

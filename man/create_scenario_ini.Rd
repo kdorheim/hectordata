@@ -5,12 +5,14 @@
 \title{Create a new Hector input .ini file for a given scenario. New .ini files are
 written to hectordata/inst/input.}
 \usage{
-create_scenario_ini(scenario)
+create_scenario_ini(scenario, check_em = TRUE)
 }
 \arguments{
 \item{scenario}{Character vector; Name of the scenario for which an input file is being created.}
 
-\item{emission_file}{Character vector; Name of the emission file for the given scenario.}
+\item{check_em}{Boolean, optional; Whether or not to check for the existence of the scenario's
+emissions file before creating the scenario .ini file. If the emissions file is not found
+in the correct directory (input/emissions), an error is raised. Default is TRUE.}
 }
 \value{
 Character vector; Path of the new .ini file
@@ -18,8 +20,4 @@ Character vector; Path of the new .ini file
 \description{
 Create a new Hector input .ini file for a given scenario. New .ini files are
 written to hectordata/inst/input.
-}
-\examples{
-create_scenario_ini("rcp45")
-
 }

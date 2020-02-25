@@ -4,10 +4,13 @@
 \alias{parse_emission_fname}
 \title{Parse the name of the emissions file for a given scenario.}
 \usage{
-parse_emission_fname(scenario)
+parse_emission_fname(scenario, prefix = TRUE)
 }
 \arguments{
 \item{scenario}{Character vector; Name of the scenario.}
+
+\item{prefix}{Boolean, default is TRUE; If TRUE, prepend "emissions/" to the
+parsed emissions file name. If FALSE, return only the emissions file name.}
 }
 \value{
 Character vector; Name of the emissions file corresponding to the scenario
@@ -16,9 +19,5 @@ Character vector; Name of the emissions file corresponding to the scenario
 The filename will be of the format: "<scenario>_emissions.csv".
 Note: the letters in the scenario name will be converted to upper-case to follow
 existing Hector input file naming conventions.
-}
-\examples{
-parse_emission_fname("rcp45")
-
 }
 \keyword{internal}

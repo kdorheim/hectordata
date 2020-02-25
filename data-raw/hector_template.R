@@ -3,7 +3,7 @@
 # creating Hector .ini files for new scenarios
 #
 # Matt Nicholson
-# 17 Feb 2020
+# 25 Feb 2020
 
 # Use `devtools::load_all()` here instead of `library()` because this script is
 # more likely to be run while developing the package, in which case the R

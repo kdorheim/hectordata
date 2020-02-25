@@ -15,8 +15,4 @@ Character vector; Name of the emissions file corresponding to the scenario
 \description{
 The filename will be of the format: "hector_<scenario>.ini"
 }
-\examples{
-parse_ini_fname("rcp45")
-
-}
 \keyword{internal}
