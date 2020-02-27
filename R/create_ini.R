@@ -19,7 +19,7 @@
 #' @export
 create_scenario_ini <- function(scenario, outpath = NULL, check_em = TRUE) {
   if (is.null(outpath)) {
-    outpath <- file.path("input", "inst")
+    outpath <- file.path("inst", "input")
     dir.create(outpath, showWarnings = FALSE, recursive = TRUE)
   }
   # Create the name of the emissions file corresponding to the scenario
