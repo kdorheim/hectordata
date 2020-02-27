@@ -13,7 +13,6 @@ get_run_name <- function(ini) {
 }
 
 read_test_ini <- function() {
-  # test_ini  <- file.path("tests", "testthat", "hector_test_rcp45.ini")
   test_ini  <- file.path("hector_test_rcp45.ini")
   ini_lines <- readLines( file(test_ini, "r") )
   invisible(ini_lines)
