@@ -10,7 +10,7 @@
 #'
 #' @param scenario Character vector; Name of the scenario for which an input file is being created.
 #' @param outpath Character vector, optional; Path of the directory to place the newly-created .ini file. The
-#' default directory is hectordata/input/inst.
+#' default directory is hectordata/inst/input.
 #' @param check_em Boolean, optional; Whether or not to check for the existence of the scenario's
 #' emissions file before creating the scenario .ini file. If the emissions file is not found
 #' in the correct directory (input/emissions), an error is raised. Default is TRUE.
