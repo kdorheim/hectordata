@@ -5,10 +5,13 @@
 \title{Create a new Hector input .ini file for a given scenario. New .ini files are
 written to hectordata/inst/input.}
 \usage{
-create_scenario_ini(scenario, check_em = TRUE)
+create_scenario_ini(scenario, outpath = NULL, check_em = TRUE)
 }
 \arguments{
 \item{scenario}{Character vector; Name of the scenario for which an input file is being created.}
+
+\item{outpath}{Character vector, optional; Path of the directory to place the newly-created .ini file. The
+default directory is hectordata/input/inst.}
 
 \item{check_em}{Boolean, optional; Whether or not to check for the existence of the scenario's
 emissions file before creating the scenario .ini file. If the emissions file is not found

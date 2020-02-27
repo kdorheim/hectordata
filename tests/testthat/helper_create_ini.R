@@ -2,13 +2,6 @@
 # Matt Nicholson
 # 20 Feb 2020
 
-fetch_hector_ini <- function(scenario) {
-  hector_ini_name <- parse_ini_fname(scenario)
-  hector_ini_path <- system.file('input', hector_ini_name, package='hector')
-  hector_ini      <- readLines( file(hector_ini_path, "r") )
-  invisible(hector_ini)
-}
-
 get_emission_lines <- function(ini) {
   lines <- ini[grepl("*_emissions:csv:*", ini)]
   invisible(lines)
@@ -17,4 +10,11 @@ get_emission_lines <- function(ini) {
 get_run_name <- function(ini) {
   name <- ini[grepl("run_name", ini)]
   invisible(name)
+}
+
+read_test_ini <- function() {
+  # test_ini  <- file.path("tests", "testthat", "hector_test_rcp45.ini")
+  test_ini  <- file.path("hector_test_rcp45.ini")
+  ini_lines <- readLines( file(test_ini, "r") )
+  invisible(ini_lines)
 }
