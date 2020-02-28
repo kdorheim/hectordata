@@ -163,6 +163,13 @@
       "Repository": "CRAN",
       "Hash": "dc0030cea0d85397ba3ba5b930c82c6a"
     },
+    "dplyr": {
+      "Package": "dplyr",
+      "Version": "0.8.4",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "3ecb1deedd4c4ad6ebf4605d263616f2"
+    },
     "ellipsis": {
       "Package": "ellipsis",
       "Version": "0.3.0",
@@ -205,6 +212,13 @@
       "Repository": "CRAN",
       "Hash": "0e26be4558dbbc713d7cfe4a4c361f38"
     },
+    "fst": {
+      "Package": "fst",
+      "Version": "0.9.0",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "2df24a7550557e3564a83c39cc70a585"
+    },
     "ggplot2": {
       "Package": "ggplot2",
       "Version": "3.2.1",
@@ -239,6 +253,13 @@
       "Source": "Repository",
       "Repository": "CRAN",
       "Hash": "ac5c6baf7822ce8732b343f14c072c4d"
+    },
+    "here": {
+      "Package": "here",
+      "Version": "0.1",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "2c0406b8e0a4c3516ab37be62da74e3c"
     },
     "hms": {
       "Package": "hms",
@@ -379,6 +400,13 @@
       "Source": "Repository",
       "Repository": "CRAN",
       "Hash": "5e655fb54cceead0f095f22d7be33da3"
+    },
+    "plogr": {
+      "Package": "plogr",
+      "Version": "0.2.0",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "09eb987710984fc2905c7129c7d85e65"
     },
     "plyr": {
       "Package": "plyr",
@@ -568,6 +596,13 @@
       "Source": "Repository",
       "Repository": "CRAN",
       "Hash": "8248ee35d1e15d1e506f05f5a5d46a75"
+    },
+    "tidyselect": {
+      "Package": "tidyselect",
+      "Version": "1.0.0",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "7d4b0f1ab542d8cb7a40c593a4de2f36"
     },
     "usethis": {
       "Package": "usethis",
