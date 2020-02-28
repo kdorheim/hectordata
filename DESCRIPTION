@@ -1,11 +1,16 @@
 Package: hectordata
 Type: Package
-Title: What the Package Does (Title Case)
+Title: Input Data for The Hector Simple Climate Model
 Version: 0.1.0
-Author: Who wrote it
-Maintainer: The package maintainer <yourself@somewhere.net>
-Description: More about what it does (maybe more than one line)
-    Use four spaces when indenting paragraphs within the Description.
-License: What license is it under?
+Authors@R: c(person("Matt", "Nicholson", email = "matthew.nicholson@pnnl.gov", role = c("aut", "cre")),
+	           person("Kalyn", "Dorheim", email = "kalyn.dorheim@pnnl.gov", role = "aut"))
+Description: A package to manage input for the simple climate model Hector. It 
+    allows users to easily create new input .ini files to run Hector for 
+    a variety of scenarios. 
+License: GPL-3
 Encoding: UTF-8
+Depends: R (>= 2.10)
+Suggests:
+    testthat
 LazyData: true
+RoxygenNote: 7.0.2

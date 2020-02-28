@@ -1,0 +1,1 @@
+Hector .ini input files created by the Hectordata package will be written to this directory.
