@@ -11,6 +11,15 @@ rundates   <- seq(year_start, year_end)
 rcmip_inputs <- get_rcmip_inputs()
 rcmip2hector_lut <- rcmip2hector_df()
 
+# === Helper functions =========================================================
+helper_var_col <- function(scenario, var_name) {
+  input_sub <- filter_rcmip_inputs(rcmip_inputs, scenario, year_start, year_end)
+  var_sub   <- subset_hector_var(input_sub, rcmip2hector_lut, var_name)
+  var_col   <- get_variable_col(var_sub, rcmip2hector_lut, rundates)
+  invisible(var_col)
+}
+
+# === Test functions ===========================================================
 test_that("Read and return the RCMIP emissions input file", {
   expected_cols <- c("Model", "Scenario", "Region", "Variable", "Unit",
                      "Activity_Id", "Mip_Era", "year", "value")
@@ -37,11 +46,19 @@ test_that("get_meta_col() produces correct metadata column", {
 
 test_that("Construct output emissions dataframe column with get_variable_col()", {
   scenario <- "rcp60"
-  input_sub <- filter_rcmip_inputs(rcmip_inputs, scenario, year_start, year_end)
-  ffi <- subset_hector_var(input_sub, rcmip2hector_lut, "ffi_emissions")
-  ffi_col <- get_variable_col(ffi, rcmip2hector_lut, rundates)
+  variable <- "ffi_emissions"
+  ffi_col  <- helper_var_col(scenario, variable)
   expect_equal(ffi_col[[1]], "")
   expect_equal(ffi_col[[2]], "")
   expect_equal(ffi_col[[3]], "PgC year-1")
   expect_equal(ffi_col[[4]], "ffi_emissions")
 })
+
+test_that("Metadata column and FFI column have same length", {
+  scenario <- "rcp60"
+  variable <- "ffi_emissions"
+  ffi_col  <- helper_var_col(scenario, variable)
+  meta_col <- get_meta_col(scenario, rundates)
+  expect_equal(length(ffi_col), length(meta_col))
+})
+
