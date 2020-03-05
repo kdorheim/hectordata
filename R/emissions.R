@@ -18,11 +18,10 @@ generate_emissions <- function(scenario, outpath = NULL) {
     dir.create(outpath, showWarnings = FALSE, recursive = TRUE)
   }
 
-  # Get the RCMIP to Hector variable LUT
-  rcmip2hector_lut <- rcmip2hector_df()
-
   hector_minyear <- 1745
   hector_maxyear <- 2100
+
+  rcmip2hector_lut <- rcmip2hector_df()
 
   # Restrict inputs to the range of dates
   # input_sub <- get_rcmip_inputs() %>%
@@ -32,6 +31,7 @@ generate_emissions <- function(scenario, outpath = NULL) {
   #     year <= hector_maxyear
   #   )
   rcmip_inputs <- get_rcmip_inputs()
+  # TODO Does this need to be moved to after we determine minyear & maxyear?
   input_sub <- filter_rcmip_inputs(rcmip_inputs, scenario, hector_minyear, hector_maxyear)
   stopifnot(nrow(input_sub) > 0)
 
@@ -297,7 +297,7 @@ subset_hector_var <- function(input_data, var_lut, hector_var) {
 #' @return `core`, invisibly
 #' @author Alexey Shiklomanov, Matt Nicholson
 #' @export
-get_variable_col <- function(input_data, hector_vars,
+get_variable_col <- function(input_data, hector_vars, rundates,
                              varname = NULL,
                              interpolate = TRUE) {
   if (!(nrow(input_data) > 0)) {
@@ -310,8 +310,11 @@ get_variable_col <- function(input_data, hector_vars,
     "value" %in% colnames(input_data)
   )
   if (is.null(varname)) varname <- unique(input_data[["Variable"]])
-  stopifnot(length(unique(input_data[["Variable"]])) == 1)
-  rundates <- seq(hector::startdate(core), hector::enddate(core))
+  var_len <- length(unique(input_data[["Variable"]]))
+  if (var_len != 1) {
+    err_msg <- paste0('Length of unique(input_data[["Variable"]]) is ', var_len, ', expected 1')
+    stop(err_msg)
+  }
   varconv <- dplyr::filter(hector_vars, rcmip_variable == !!varname)
   stopifnot(nrow(varconv) == 1)
   unit <- varconv$rcmip_udunits
