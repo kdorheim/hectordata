@@ -8,7 +8,7 @@
 #'
 #' @param scenario Character vector; Scenario to generate an emissions file for.
 #' @param outpath Character vector, optional; Directory to write the created emissions file to.
-#' If not given, the file will be written to inst/input/emissions
+#'   If not given, the file will be written to inst/input/emissions
 #' @return quien sabe
 #' @author Matt Nicholson
 #' @export
@@ -25,12 +25,14 @@ generate_emissions <- function(scenario, outpath = NULL) {
   hector_maxyear <- 2100
 
   # Restrict inputs to the range of dates
-  input_sub <- get_rcmip_inputs() %>%
-    dplyr::filter(
-      Scenario == !!scenario,
-      year >= hector_minyear,
-      year <= hector_maxyear
-    )
+  # input_sub <- get_rcmip_inputs() %>%
+  #   dplyr::filter(
+  #     Scenario == !!scenario,
+  #     year >= hector_minyear,
+  #     year <= hector_maxyear
+  #   )
+  rcmip_inputs <- get_rcmip_inputs()
+  input_sub <- filter_rcmip_inputs(rcmip_inputs, scenario, hector_minyear, hector_maxyear)
   stopifnot(nrow(input_sub) > 0)
 
   minyear <- max(min(input_sub$year), hector_minyear)
@@ -87,6 +89,9 @@ generate_emissions <- function(scenario, outpath = NULL) {
   #     HFC125_emissions,   HFC134a_emissions, HFC143a_emissions,
   #     HFC227ea_emissions, HFC23_emissions,   HFC245fa_emissions,
   #     HFC32_emissions,    HFC4310_emissions
+
+  # Metadata column of the output Hector emissions dataframe
+  output_meta_col <- get_meta_col(scenario, rundates)
 
   # CO2
   ffi <- subset_hector_var(input_sub, rcmip2hector_lut, "ffi_emissions")
@@ -218,8 +223,8 @@ generate_emissions <- function(scenario, outpath = NULL) {
 #' Long RCMIP inputs data.frame
 #'
 #' @param targetfile Character vector, optional; File to read RCMIP input from.
-#' Default is inst/rcmip-inputs.fst
-#' @return
+#'   Default is inst/rcmip-inputs.fst
+#' @return quien sabe
 #' @author Alexey Shiklomanov
 #' @importFrom magrittr %>%
 #' @export
@@ -230,6 +235,23 @@ get_rcmip_inputs <- function(targetfile = NULL) {
   stopifnot(file.exists(targetfile))
   fst::read_fst(targetfile) %>%
     tibble::as_tibble()
+}
+
+#' Filter RCMIP inputs dataframe by start year, end year, & scenario
+#'
+#' @param rcmip_inputs tibble/dataframe of RCMIP input data
+#' @param scenario Character vector; Scenario of the emissions file being generated
+#' @param year_min Integer; Minimum Hector year
+#' @param year_max Integer; Maximum Hector year
+#' @return filtered/subsetted RCMIP input dataframe, invisibly
+filter_rcmip_inputs <- function(rcmip_inputs, scenario, year_min, year_max) {
+  input_sub <- rcmip_inputs %>%
+    dplyr::filter(
+      Scenario == !!scenario,
+      year >= year_min,
+      year <= year_max
+    )
+  invisible(input_sub)
 }
 
 #' Read the RCMIP to Hector variable Look-Up Table (LUT)
@@ -247,7 +269,7 @@ rcmip2hector_df <- function() {
 #' @param input_data Dataframe; RCMIP input emissions
 #' @param var_lut Dataframe; RCMIP to Hector variable conversion information
 #' @param hector_var Character vector; Name of the emission variable to retrieve,
-#' in Hector format.
+#'   in Hector format.
 #' @return Quien sabe
 #' @author Alexey Shiklomanov, Matt Nicholson
 #' @export
@@ -263,26 +285,21 @@ subset_hector_var <- function(input_data, var_lut, hector_var) {
   result
 }
 
-# TODO rename as "stash_variable"
-# TODO remove Hector core param
-# TODO add output dataframe param (if NULL, create new DF)
-# TODO change return val to output dataframe
+# TODO rename function ("stash_variable"?)
 #' Set Hector variable to RCMIP data
 #'
-#' @param core Hector core object
 #' @param input_data `data.frame` of RCMIP inputs for a specific scenario.
-#' @param varname RCMIP variable name. Defaults to unique `Variable` in
-#'   `input_data`.
 #' @param hector_vars RCMIP to Hector variable conversion table
+#' @param varname RCMIP variable name (optional). Defaults to unique `Variable` in
+#'   `input_data`.
 #' @param interpolate (Logical) If `TRUE` (default), interpolate incomplete time
 #'   series using [stats::approxfun()]
 #' @return `core`, invisibly
-#' @author Alexey Shiklomanov
+#' @author Alexey Shiklomanov, Matt Nicholson
 #' @export
-set_variable <- function(core, input_data,
-                         varname = NULL,
-                         hector_vars = rcmip2hector_df(),
-                         interpolate = TRUE) {
+get_variable_col <- function(input_data, hector_vars,
+                             varname = NULL,
+                             interpolate = TRUE) {
   if (!(nrow(input_data) > 0)) {
     warning("Empty input data. Returning core unmodified.")
     return(core)
@@ -306,8 +323,8 @@ set_variable <- function(core, input_data,
   if (interpolate) invar <- interpolate_var(invar)
   year <- invar$year
   value <- udunits2::ud.convert(invar$value, unit, hector_unit)
-  hector::setvar(core, year, hector_name, value, varconv$hector_unit)
-  invisible(core)
+  var_col <- c("", "", varconv$hector_unit, hector_name, value)
+  invisible(var_col)
 }
 
 #' Interpolate a Hector variable
@@ -342,3 +359,8 @@ get_meta_col <- function(scenario, rundates) {
                 rundates)
   invisible(meta_col)
 }
+
+# get_var_col <- function(){
+#   var_col <- c("", "", <var_unit>, <var_name>, var_vals....)
+#   invisible(var_col)
+# }
