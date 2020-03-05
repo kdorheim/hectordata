@@ -604,6 +604,11 @@
       "Repository": "CRAN",
       "Hash": "7d4b0f1ab542d8cb7a40c593a4de2f36"
     },
+    "udunits2": {
+      "Package": "udunits2",
+      "Version": "0.13",
+      "Source": "Repository"
+    },
     "usethis": {
       "Package": "usethis",
       "Version": "1.5.1",
