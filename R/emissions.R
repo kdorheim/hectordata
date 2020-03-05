@@ -17,9 +17,8 @@ generate_emissions <- function(scenario, outpath = NULL) {
     outpath <- file.path("inst", "input", "emissions")
     dir.create(outpath, showWarnings = FALSE, recursive = TRUE)
   }
-  # Create a deep-copy of the lut
-  # hector_vars <- tibble::as_tibble(rcmip_emissions_lut)
-  hector_vars <- rcmip_emissions_lut  # Shallow copy hehe
+
+  rcmip2hector_lut <- rcmip2hector_df()
 
   hector_minyear <- 1745
   hector_maxyear <- 2100
@@ -150,7 +149,7 @@ generate_emissions <- function(scenario, outpath = NULL) {
 
   # Same logic for halocarbons.
   # HACK: For now, only use the ones already defined.
-  halocarbons <- hector_vars %>%
+  halocarbons <- rcmip2hector_lut %>%
     dplyr::filter(grepl("_halocarbon", hector_component)) %>%
     dplyr::transmute(halocarbon = gsub("_halocarbon", "", hector_component),
                      halocarbon_rxp = paste0(halocarbon, "$")) %>%
@@ -211,15 +210,27 @@ get_rcmip_inputs <- function(targetfile = NULL) {
     tibble::as_tibble()
 }
 
+#' Read the RCMIP to Hector variable Look-Up Table (LUT)
+#'
+#' @return dataframe
+#' @author Alexey Shiklomanov
+rcmip2hector_df <- function() {
+  lut_file <- here::here("inst", "variable-conversion.csv")
+  lut <- readr::read_csv(lut_file, col_types = readr::cols(.default = "c"))
+  invisible(lut)
+}
+
 #' Extract emissions data for a given variable from the RCMIP emissions.
 #'
+#' @param input_data Dataframe; RCMIP input emissions
+#' @param var_lut Dataframe; RCMIP to Hector variable conversion information
 #' @param hector_var Character vector; Name of the emission variable to retrieve,
 #' in Hector format.
 #' @return Quien sabe
-#' @author Alexey Shiklomanov
+#' @author Alexey Shiklomanov, Matt Nicholson
 #' @export
-subset_hector_var <- function(input_data, hector_var) {
-  hector_sub <- rcmip2hector_df() %>%
+subset_hector_var <- function(input_data, var_lut, hector_var) {
+  hector_sub <- var_lut %>%
     dplyr::filter(hector_variable == !!hector_var)
   stopifnot(nrow(hector_sub) > 0)
   result <- input_data %>%
