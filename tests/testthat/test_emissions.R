@@ -19,3 +19,17 @@ test_that("Read and return the RCMIP to Hector variable Look-Up Table", {
   lut <- rcmip2hector_df()
   expect_true(identical(expected_cols, names(lut)))
 })
+
+test_that("get_meta_col() produces correct metadata column", {
+  year_start <- 1745
+  year_end   <- 2100
+  rundates   <- seq(year_start, year_end)
+  scenario   <- "test_emissions"
+  meta_col   <- get_meta_col(scenario, rundates)
+  expect_equal(meta_col[[1]], paste0("; ", scenario, " emissions"))
+  expect_equal(meta_col[[2]], "; Produced by Hectordata")
+  expect_equal(meta_col[[3]], ";UNITS:")
+  expect_equal(meta_col[[4]], "Date")
+  expect_equal(meta_col[[5]], year_start)
+  expect_equal(meta_col[[length(meta_col)]], year_end)
+})
