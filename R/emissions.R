@@ -67,29 +67,6 @@ generate_emissions <- function(scenario, outpath = NULL) {
       tidyr::pivot_longer(-year, names_to = "Variable", values_to = "value")
   }
 
-  # Variables that appear in Hector emission input files:
-  #   Misc:
-  #     BC_emissions,      C2F6_emissions,  C6F14,
-  #     CCl4_emissions,    CF4_emissions,   CH4_emissions,
-  #     CO_emissions,      N2O_emissions,   NH3,
-  #     NMVOC_emissions,   NOX_emissions,   OC_emissions,
-  #     SF6_emissions,     SO2_emissions,   SOx,
-  #     ffi_emissions,     luc_emissions
-  #   CH3's:
-  #     CH3Br_emissions,  CH3CCl3_emissions, CH3Cl_emissions
-  #   CFC's:
-  #     CFC113_emissions, CFC114_emissions, CFC115_emissions,
-  #     CFC11_emissions,  CFC12_emissions,
-  #   Halons:
-  #     halon1211_emissions, halon1301_emissions, halon2402_emissions,
-  #     HALON1202
-  #   HCF's:
-  #     HCF141b_emissions, HCF142b_emissions, HCF22_emissions
-  #   HFC's:
-  #     HFC125_emissions,   HFC134a_emissions, HFC143a_emissions,
-  #     HFC227ea_emissions, HFC23_emissions,   HFC245fa_emissions,
-  #     HFC32_emissions,    HFC4310_emissions
-
   # Metadata column of the output Hector emissions dataframe
   output_meta_col <- get_meta_col(scenario, rundates)
 
@@ -362,8 +339,3 @@ get_meta_col <- function(scenario, rundates) {
                 rundates)
   invisible(meta_col)
 }
-
-# get_var_col <- function(){
-#   var_col <- c("", "", <var_unit>, <var_name>, var_vals....)
-#   invisible(var_col)
-# }

@@ -42,6 +42,6 @@ test_that("Construct output emissions dataframe column with get_variable_col()",
   ffi_col <- get_variable_col(ffi, rcmip2hector_lut, rundates)
   expect_equal(ffi_col[[1]], "")
   expect_equal(ffi_col[[2]], "")
-  expect_equal(ffi_col[[3]], "GtC/yr")
+  expect_equal(ffi_col[[3]], "PgC year-1")
   expect_equal(ffi_col[[4]], "ffi_emissions")
 })
