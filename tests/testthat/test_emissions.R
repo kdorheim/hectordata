@@ -14,9 +14,12 @@ rcmip2hector_lut <- rcmip2hector_df()
 # === Helper functions =========================================================
 helper_var_col <- function(scenario, var_name) {
   input_sub <- filter_rcmip_inputs(rcmip_inputs, scenario, year_start, year_end)
+  minyear   <- max(min(input_sub$year), year_start)
+  maxyear   <- min(max(input_sub$year), year_end)
+  rundates  <- seq(minyear, maxyear)
   var_sub   <- subset_hector_var(input_sub, rcmip2hector_lut, var_name)
   var_col   <- get_variable_col(var_sub, rcmip2hector_lut, rundates)
-  invisible(var_col)
+  invisible(list(v_col=var_col, r_dates=rundates))
 }
 
 # === Test functions ===========================================================
@@ -37,7 +40,7 @@ test_that("get_meta_col() produces correct metadata column", {
   scenario   <- "test_emissions"
   meta_col   <- get_meta_col(scenario, rundates)
   expect_equal(meta_col[[1]], paste0("; ", scenario, " emissions"))
-  expect_equal(meta_col[[2]], "; Produced by Hectordata")
+  expect_equal(meta_col[[2]], "; Produced by Hectordata R package")
   expect_equal(meta_col[[3]], ";UNITS:")
   expect_equal(meta_col[[4]], "Date")
   expect_equal(meta_col[[5]], as.character(year_start))
@@ -47,7 +50,8 @@ test_that("get_meta_col() produces correct metadata column", {
 test_that("Construct output emissions dataframe column with get_variable_col()", {
   scenario <- "rcp60"
   variable <- "ffi_emissions"
-  ffi_col  <- helper_var_col(scenario, variable)
+  ffi_ret_val <- helper_var_col(scenario, variable)
+  ffi_col  <- ffi_ret_val$v_col
   expect_equal(ffi_col[[1]], "")
   expect_equal(ffi_col[[2]], "")
   expect_equal(ffi_col[[3]], "PgC year-1")
@@ -57,7 +61,9 @@ test_that("Construct output emissions dataframe column with get_variable_col()",
 test_that("Metadata column and FFI column have same length", {
   scenario <- "rcp60"
   variable <- "ffi_emissions"
-  ffi_col  <- helper_var_col(scenario, variable)
+  ffi_ret_val <- helper_var_col(scenario, variable)
+  ffi_col  <- ffi_ret_val$v_col
+  rundates <- ffi_ret_val$r_dates
   meta_col <- get_meta_col(scenario, rundates)
   expect_equal(length(ffi_col), length(meta_col))
 })

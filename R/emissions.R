@@ -31,7 +31,6 @@ generate_emissions <- function(scenario, outpath = NULL) {
   #     year <= hector_maxyear
   #   )
   rcmip_inputs <- get_rcmip_inputs()
-  # TODO Does this need to be moved to after we determine minyear & maxyear?
   input_sub <- filter_rcmip_inputs(rcmip_inputs, scenario, hector_minyear, hector_maxyear)
   stopifnot(nrow(input_sub) > 0)
 
@@ -79,15 +78,18 @@ generate_emissions <- function(scenario, outpath = NULL) {
 
   if (nrow(ffi) && nrow(luc)) {
     # Use FFI and LUC emissions
-    hc <- set_variable(hc, ffi, ...)
-    hc <- set_variable(hc, luc, ...)
+    var_col <- get_variable_col(ffi, rcmip2hector_lut, rundates, varname='ffi_emissions')
+    output_matrix <- lists_2_matrix(output_meta_col, var_col)
+    var_col <- get_variable_col(luc, rcmip2hector_lut, rundates, varname='luc_emissions')
+    output_matrix <- add_list_2_matrix(output_matrix, var_col)
   } else if (nrow(co2)) {
     # Use CO2 concentrations
-    # TODO So do we just leave ffi & luc blank in this case?
-    hc <- set_variable(hc, co2, ...)
+    var_col <- get_variable_col(co2_conc, rcmip2hector_lut, rundates,
+                                varname='CO2_constrain')
+    output_matrix <- add_list_2_matrix(output_matrix, var_col)
     maxco2 <- 3500
-    if (any(co2$value > maxco2)) {
-      maxyear <- co2 %>%
+    if (any(co2_conc$value > maxco2)) {
+      maxyear <- co2_conc %>%
         dplyr::filter(value < maxco2) %>%
         dplyr::pull(year) %>%
         max()
@@ -101,12 +103,14 @@ generate_emissions <- function(scenario, outpath = NULL) {
   }
 
   # CH4
-  ch4_emit <- subset_hector_var(input_sub, rcmip2hector_lut, "CH4_emissions")
-  ch4_conc <- subset_hector_var(input_sub, rcmip2hector_lut, "CH4_constrain")
+  emit <- subset_hector_var(input_sub, rcmip2hector_lut, "CH4_emissions")
+  conc <- subset_hector_var(input_sub, rcmip2hector_lut, "CH4_constrain")
   if (nrow(emit)) {
-    hc <- set_variable(hc, emit, ...)
+    var_col <- get_variable_col(emit, rcmip2hector_lut, rundates, varname='ffi_emissions')
+    output_matrix <- add_list_2_matrix(output_matrix, var_col)
   } else if (nrow(conc)) {
-    hc <- set_variable(hc, conc, ...)
+    var_col <- get_variable_col(conc, rcmip2hector_lut, rundates, varname='ffi_emissions')
+    output_matrix <- add_list_2_matrix(output_matrix, var_col)
   }
 
   # OH and ozone
@@ -115,18 +119,23 @@ generate_emissions <- function(scenario, outpath = NULL) {
   voc_emit <- subset_hector_var(input_sub, rcmip2hector_lut, "NMVOC_emissions")
   if (nrow(nox_emit) && nrow(co_emit) && nrow(voc_emit)) {
     # Only set these if all three are present
-    hc <- set_variable(hc, nox_emit, ...)
-    hc <- set_variable(hc, co_emit, ...)
-    hc <- set_variable(hc, voc_emit, ...)
+    var_col <- get_variable_col(nox_emit, rcmip2hector_lut, rundates, varname='ffi_emissions')
+    output_matrix <- add_list_2_matrix(output_matrix, var_col)
+    var_col <- get_variable_col(co_emit, rcmip2hector_lut, rundates, varname='ffi_emissions')
+    output_matrix <- add_list_2_matrix(output_matrix, var_col)
+    var_col <- get_variable_col(voc_emit, rcmip2hector_lut, rundates, varname='ffi_emissions')
+    output_matrix <- add_list_2_matrix(output_matrix, var_col)
   }
 
   # N2O
-  n2o_emit <- subset_hector_var(input_sub, rcmip2hector_lut, "N2O_emissions")
-  n2o_conc <- subset_hector_var(input_sub, rcmip2hector_lut, "N2O_constrain")
+  emit <- subset_hector_var(input_sub, rcmip2hector_lut, "N2O_emissions")
+  conc <- subset_hector_var(input_sub, rcmip2hector_lut, "N2O_constrain")
   if (nrow(emit)) {
-    hc <- set_variable(hc, emit, ...)
+    var_col <- get_variable_col(emit, rcmip2hector_lut, rundates, varname='ffi_emissions')
+    output_matrix <- add_list_2_matrix(output_matrix, var_col)
   } else if (nrow(conc)) {
-    hc <- set_variable(hc, conc, ...)
+    var_col <- get_variable_col(conc, rcmip2hector_lut, rundates, varname='ffi_emissions')
+    output_matrix <- add_list_2_matrix(output_matrix, var_col)
   }
 
   # Variables that can be handled naively
@@ -139,12 +148,13 @@ generate_emissions <- function(scenario, outpath = NULL) {
     dat <- subset_hector_var(input_sub, rcmip2hector_lut, v)
     if (nrow(dat) > 0) {
       tryCatch(
-        hc <- set_variable(hc, dat, ...),
+        var_col <- get_variable_col(dat, rcmip2hector_lut, rundates, varname='ffi_emissions'),
         error = function(e) {
           stop("Hit the following error on variable ", v, ":\n",
                conditionMessage(e))
         }
       )
+      output_matrix <- add_list_2_matrix(output_matrix, var_col)
     } else {
       warning("Scenario ", scenario, " has no data for ", v, ". ",
               "Using default value.")
@@ -185,7 +195,7 @@ generate_emissions <- function(scenario, outpath = NULL) {
     indat <- input_sub %>%
       dplyr::filter(Variable == !!i_rcmip_var)
     tryCatch(
-      hc <- set_variable(hc, indat, ...),
+      var_col <- get_variable_col(indat, rcmip2hector_lut, rundates, varname='ffi_emissions'),
       error = function(e) {
         stop(
           "Error setting Hector variable ", i_hector_var,
@@ -193,6 +203,7 @@ generate_emissions <- function(scenario, outpath = NULL) {
         )
       }
     )
+    output_matrix <- add_list_2_matrix(output_matrix, var_col)
   }
   invisible(maxyear)
 }
@@ -333,9 +344,29 @@ interpolate_var <- function(dat) {
 get_meta_col <- function(scenario, rundates) {
   # Metadata & date column for the output dataframe
   meta_col <- c(paste0("; ", scenario , " emissions"),
-                paste0("; Produced by Hectordata"),
+                paste0("; Produced by Hectordata R package"),
                 ";UNITS:",
                 "Date",
                 rundates)
   invisible(meta_col)
+}
+
+#' Combine two lists into a matrix. The lists are treated as column vectors
+#'
+#' @param list1
+#' @param list2
+#' @return a matrix
+lists_2_matrix <- function(list1, list2) {
+  ret_val <- cbind(list1, list2)
+  invisible(ret_val)
+}
+
+#' Add a list to a matrix as a new column
+#'
+#' @param matr Matrix
+#' @param lst List to add to the matrix
+#' @return matrix
+add_list_2_matrix(matr, lst) {
+  matr <- cbind(matr, lst)
+  invisible(matr)
 }
