@@ -366,7 +366,7 @@ lists_2_matrix <- function(list1, list2) {
 #' @param matr Matrix
 #' @param lst List to add to the matrix
 #' @return matrix
-add_list_2_matrix(matr, lst) {
+add_list_2_matrix <- function(matr, lst) {
   matr <- cbind(matr, lst)
   invisible(matr)
 }

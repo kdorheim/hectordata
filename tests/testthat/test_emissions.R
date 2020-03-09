@@ -61,10 +61,22 @@ test_that("Construct output emissions dataframe column with get_variable_col()",
 test_that("Metadata column and FFI column have same length", {
   scenario <- "rcp60"
   variable <- "ffi_emissions"
-  ffi_ret_val <- helper_var_col(scenario, variable)
-  ffi_col  <- ffi_ret_val$v_col
-  rundates <- ffi_ret_val$r_dates
+  var_col  <- helper_var_col(scenario, variable)
+  ffi_col  <- var_col$v_col
+  rundates <- var_col$r_dates
   meta_col <- get_meta_col(scenario, rundates)
   expect_equal(length(ffi_col), length(meta_col))
+})
+
+test_that("Create matrix from metadata & ffi columns", {
+  scenario <- "rcp60"
+  variable <- "ffi_emissions"
+  var_col  <- helper_var_col(scenario, variable)
+  ffi_col  <- var_col$v_col
+  rundates <- var_col$r_dates
+  meta_col <- get_meta_col(scenario, rundates)
+  output_matr <- lists_2_matrix(meta_col, ffi_col)
+  print(names(output_matr))
+  expect_equal(class(output_matr), "matrix")
 })
 
