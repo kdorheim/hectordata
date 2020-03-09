@@ -76,7 +76,13 @@ test_that("Create matrix from metadata & ffi columns", {
   rundates <- var_col$r_dates
   meta_col <- get_meta_col(scenario, rundates)
   output_matr <- lists_2_matrix(meta_col, ffi_col)
-  print(names(output_matr))
   expect_equal(class(output_matr), "matrix")
+  expect_true(all(dim(output_matr) == c(340, 2)))
+  # Add luc_emissions and re-check
+  var_col <- helper_var_col(scenario, "luc_emissions")
+  luc_col <- var_col$v_col
+  output_matr <- add_list_2_matrix(output_matr, luc_col)
+  expect_equal(class(output_matr), "matrix")
+  expect_true(all(dim(output_matr) == c(340, 3)))
 })
 
