@@ -15,8 +15,8 @@
 generate_emissions <- function(scenario, outpath = NULL, debug = FALSE) {
   if (is.null(outpath)) {
     outpath <- file.path("inst", "input", "emissions")
-    dir.create(outpath, showWarnings = FALSE, recursive = TRUE)
   }
+  dir.create(outpath, showWarnings = FALSE, recursive = TRUE)
 
   hector_minyear <- 1745
   hector_maxyear <- 2100
@@ -67,18 +67,15 @@ generate_emissions <- function(scenario, outpath = NULL, debug = FALSE) {
   luc <- subset_hector_var(input_sub, rcmip2hector_lut, "luc_emissions")
   co2_conc <- subset_hector_var(input_sub, rcmip2hector_lut, "CO2_constrain")
 
-  # TODO Instead of setting the Hector variable value, we need to write to csv
-
   if (nrow(ffi) && nrow(luc)) {
     # Use FFI and LUC emissions
-    var_col <- get_variable_col(ffi, rcmip2hector_lut, rundates, varname='ffi_emissions')
+    var_col <- get_variable_col(ffi, rcmip2hector_lut, rundates)
     output_matrix <- lists_2_matrix(output_meta_col, var_col)
-    var_col <- get_variable_col(luc, rcmip2hector_lut, rundates, varname='luc_emissions')
+    var_col <- get_variable_col(luc, rcmip2hector_lut, rundates)
     output_matrix <- add_list_2_matrix(output_matrix, var_col)
   } else if (nrow(co2)) {
     # Use CO2 concentrations
-    var_col <- get_variable_col(co2_conc, rcmip2hector_lut, rundates,
-                                varname='CO2_constrain')
+    var_col <- get_variable_col(co2_conc, rcmip2hector_lut, rundates)
     output_matrix <- lists_2_matrix(output_matrix, var_col)
     maxco2 <- 3500
     if (any(co2_conc$value > maxco2)) {
@@ -99,11 +96,9 @@ generate_emissions <- function(scenario, outpath = NULL, debug = FALSE) {
   emit <- subset_hector_var(input_sub, rcmip2hector_lut, "CH4_emissions")
   conc <- subset_hector_var(input_sub, rcmip2hector_lut, "CH4_constrain")
   if (nrow(emit)) {
-    output_matrix <- process_var(emit, rcmip2hector_lut, output_matrix, rundates, varname='CH4_emissions')
+    output_matrix <- process_var(emit, rcmip2hector_lut, output_matrix, rundates)
   } else if (nrow(conc)) {
-    # var_col <- get_variable_col(conc, rcmip2hector_lut, rundates, varname='CH4_constrain')
-    # output_matrix <- add_list_2_matrix(output_matrix, var_col)
-    output_matrix <- process_var(emit, rcmip2hector_lut, output_matrix, rundates, varname='CH4_constrain')
+    output_matrix <- process_var(emit, rcmip2hector_lut, output_matrix, rundates)
   }
 
   # --- OH and ozone ---
@@ -112,28 +107,18 @@ generate_emissions <- function(scenario, outpath = NULL, debug = FALSE) {
   voc_emit <- subset_hector_var(input_sub, rcmip2hector_lut, "NMVOC_emissions")
   if (nrow(nox_emit) && nrow(co_emit) && nrow(voc_emit)) {
     # Only set these if all three are present
-    # var_col <- get_variable_col(nox_emit, rcmip2hector_lut, rundates, varname='NOX_emissions')
-    # output_matrix <- add_list_2_matrix(output_matrix, var_col)
-    output_matrix <- process_var(emit, rcmip2hector_lut, output_matrix, rundates, varname='NOX_emissions')
-    # var_col <- get_variable_col(co_emit, rcmip2hector_lut, rundates, varname='CO_emissions')
-    # output_matrix <- add_list_2_matrix(output_matrix, var_col)
-    output_matrix <- process_var(emit, rcmip2hector_lut, output_matrix, rundates, varname='CO_emissions')
-    # var_col <- get_variable_col(voc_emit, rcmip2hector_lut, rundates, varname='NMVOC_emissions')
-    # output_matrix <- add_list_2_matrix(output_matrix, var_col)
-    output_matrix <- process_var(emit, rcmip2hector_lut, output_matrix, rundates, varname='NMVOC_emissions')
+    output_matrix <- process_var(nox_emit, rcmip2hector_lut, output_matrix, rundates)
+    output_matrix <- process_var(co_emit, rcmip2hector_lut, output_matrix, rundates)
+    output_matrix <- process_var(voc_emit, rcmip2hector_lut, output_matrix, rundates)
   }
 
   # --- N2O ---
   emit <- subset_hector_var(input_sub, rcmip2hector_lut, "N2O_emissions")
   conc <- subset_hector_var(input_sub, rcmip2hector_lut, "N2O_constrain")
   if (nrow(emit)) {
-    # var_col <- get_variable_col(emit, rcmip2hector_lut, rundates, varname='N2O_emissions')
-    # output_matrix <- add_list_2_matrix(output_matrix, var_col)
-    output_matrix <- process_var(emit, rcmip2hector_lut, output_matrix, rundates, varname='N2O_emissions')
+    output_matrix <- process_var(emit, rcmip2hector_lut, output_matrix, rundates)
   } else if (nrow(conc)) {
-    # var_col <- get_variable_col(conc, rcmip2hector_lut, rundates, varname='N2O_constrain')
-    # output_matrix <- add_list_2_matrix(output_matrix, var_col)
-    output_matrix <- process_var(emit, rcmip2hector_lut, output_matrix, rundates, varname='N2O_constrain')
+    output_matrix <- process_var(emit, rcmip2hector_lut, output_matrix, rundates)
   }
 
   # --- Variables that can be handled naively ---
@@ -146,7 +131,7 @@ generate_emissions <- function(scenario, outpath = NULL, debug = FALSE) {
     dat <- subset_hector_var(input_sub, rcmip2hector_lut, v)
     if (nrow(dat) > 0) {
       tryCatch(
-        output_matrix <- process_var(dat, rcmip2hector_lut, output_matrix, rundates, varname=v),
+        output_matrix <- process_var(dat, rcmip2hector_lut, output_matrix, rundates),
         error = function(e) {
           stop("Hit the following error on variable ", v, ":\n",
                conditionMessage(e))
@@ -192,7 +177,7 @@ generate_emissions <- function(scenario, outpath = NULL, debug = FALSE) {
     indat <- input_sub %>%
       dplyr::filter(Variable == !!i_rcmip_var)
     tryCatch(
-      output_matrix <- process_var(indat, rcmip2hector_lut, output_matrix, rundates, varname=i_hector_var),
+      output_matrix <- process_var(indat, rcmip2hector_lut, output_matrix, rundates),
       error = function(e) {
         stop(
           "Error setting Hector variable ", i_hector_var,
@@ -203,8 +188,11 @@ generate_emissions <- function(scenario, outpath = NULL, debug = FALSE) {
   }
   if (!debug) {
     matrix_to_csv(output_matrix, scenario, outpath)
+    invisible(outpath)
+  } else {
+    # For testing/debugging, only return the emissions matrix
+    invisible(output_matrix)
   }
-  invisible(outpath)
 }
 
 #' Long RCMIP inputs data.frame
@@ -288,8 +276,8 @@ get_variable_col <- function(input_data, hector_vars, rundates,
                              varname = NULL,
                              interpolate = TRUE) {
   if (!(nrow(input_data) > 0)) {
-    warning("Empty input data. Returning core unmodified.")
-    return(core)
+    warning("Empty input data. Returning -1.")
+    return(-1)
   }
   stopifnot(
     "Variable" %in% colnames(input_data),
@@ -299,11 +287,14 @@ get_variable_col <- function(input_data, hector_vars, rundates,
   if (is.null(varname)) varname <- unique(input_data[["Variable"]])
   var_len <- length(unique(input_data[["Variable"]]))
   if (var_len != 1) {
-    err_msg <- paste0('Length of unique(input_data[["Variable"]]) is ', var_len, ', expected 1')
+    err_msg <- paste0('Length of unique(input_data[["Variable"]]) is ', var_len, ', expected 1. Var: ', varname)
     stop(err_msg)
   }
   varconv <- dplyr::filter(hector_vars, rcmip_variable == !!varname)
-  stopifnot(nrow(varconv) == 1)
+  if (nrow(varconv) != 1) {
+    err_msg <- paste0('nrow(varconv) != 1. Var: ', varname)
+    stop(err_msg)
+  }
   unit <- varconv$rcmip_udunits
   hector_unit <- varconv$hector_udunits
   hector_name <- varconv$hector_variable
@@ -414,6 +405,7 @@ matrix_to_csv <- function(output_matrix, scenario, outpath = NULL) {
   f_path <- file.path(outpath, f_name)
   # Remove matrix column names
   colnames(output_matrix) <- NULL
-  write.table(output_matrix, file=f_path, sep=",", col.names=NA, row.names = FALSE)
+  write.table(output_matrix, file=f_path, sep=",", quote=FALSE, col.names=FALSE,
+              row.names=FALSE)
   invisible(f_path)
 }
