@@ -20,11 +20,43 @@ helper_var_col <- function(scenario, var_name) {
 }
 
 # === Matrix from metadata & ffi columns test guts =============================
-scenario <- "rcp60"
-variable <- "ffi_emissions"
-var_col  <- helper_var_col(scenario, variable)
-ffi_col  <- var_col$v_col
-rundates <- var_col$r_dates
-meta_col <- get_meta_col(scenario, rundates)
-output_matr <- lists_2_matrix(meta_col, ffi_col)
-print(output_matr)
+# scenario <- "rcp60"
+# variable <- "ffi_emissions"
+# var_col  <- helper_var_col(scenario, variable)
+# ffi_col  <- var_col$v_col
+# rundates <- var_col$r_dates
+# meta_col <- get_meta_col(scenario, rundates)
+# output_matr <- lists_2_matrix(meta_col, ffi_col)
+# var_col <- helper_var_col(scenario, "luc_emissions")
+# luc_col <- var_col$v_col
+# output_matr <- add_list_2_matrix(output_matr, luc_col)
+# colnames(output_matr) <- NULL
+# print(output_matr)
+
+# === Ellipses argument passing to subfunction =================================
+func_a <- function(scenario, year_first, year_last) {
+  print('In func_a')
+  scenario <- toupper(scenario)
+  scenario <- gsub("_", "", scenario)
+  f_name <- paste0(scenario, "_emissions.csv")
+  func_b(scenario, year_first, year_last, em_fname=f_name)#, interpolate=T)
+}
+
+func_b <- function(scenario, year_first, year_last, ...) {
+  print('In func_b')
+  args <- list(...)
+  if (is.null((args$interpolate))) {args$interpolate = TRUE}
+  print(args$em_fname)
+  func_c(scenario, args$em_fname, args$interpolate)
+}
+
+func_c <- function(scenario, em_fname, interpolate=TRUE) {
+  print('In func_c')
+  print(paste0('Emissions filename: ', em_fname))
+  if (interpolate) {
+    print('Interpolating!')
+  }
+}
+
+func_a(scenario, year_start, year_end)
+

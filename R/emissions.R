@@ -23,13 +23,6 @@ generate_emissions <- function(scenario, outpath = NULL) {
 
   rcmip2hector_lut <- rcmip2hector_df()
 
-  # Restrict inputs to the range of dates
-  # input_sub <- get_rcmip_inputs() %>%
-  #   dplyr::filter(
-  #     Scenario == !!scenario,
-  #     year >= hector_minyear,
-  #     year <= hector_maxyear
-  #   )
   rcmip_inputs <- get_rcmip_inputs()
   input_sub <- filter_rcmip_inputs(rcmip_inputs, scenario, hector_minyear, hector_maxyear)
   stopifnot(nrow(input_sub) > 0)
@@ -69,7 +62,7 @@ generate_emissions <- function(scenario, outpath = NULL) {
   # Metadata column of the output Hector emissions dataframe
   output_meta_col <- get_meta_col(scenario, rundates)
 
-  # CO2
+  # --- CO2 ---
   ffi <- subset_hector_var(input_sub, rcmip2hector_lut, "ffi_emissions")
   luc <- subset_hector_var(input_sub, rcmip2hector_lut, "luc_emissions")
   co2_conc <- subset_hector_var(input_sub, rcmip2hector_lut, "CO2_constrain")
@@ -86,7 +79,7 @@ generate_emissions <- function(scenario, outpath = NULL) {
     # Use CO2 concentrations
     var_col <- get_variable_col(co2_conc, rcmip2hector_lut, rundates,
                                 varname='CO2_constrain')
-    output_matrix <- add_list_2_matrix(output_matrix, var_col)
+    output_matrix <- lists_2_matrix(output_matrix, var_col)
     maxco2 <- 3500
     if (any(co2_conc$value > maxco2)) {
       maxyear <- co2_conc %>%
@@ -102,43 +95,48 @@ generate_emissions <- function(scenario, outpath = NULL) {
     warning("Scenario ", scenario, " has no CO2 data.")
   }
 
-  # CH4
+  # --- CH4 ---
   emit <- subset_hector_var(input_sub, rcmip2hector_lut, "CH4_emissions")
   conc <- subset_hector_var(input_sub, rcmip2hector_lut, "CH4_constrain")
   if (nrow(emit)) {
-    var_col <- get_variable_col(emit, rcmip2hector_lut, rundates, varname='ffi_emissions')
-    output_matrix <- add_list_2_matrix(output_matrix, var_col)
+    output_matrix <- process_var(emit, rcmip2hector_lut, output_matrix, rundates, varname='CH4_emissions')
   } else if (nrow(conc)) {
-    var_col <- get_variable_col(conc, rcmip2hector_lut, rundates, varname='ffi_emissions')
-    output_matrix <- add_list_2_matrix(output_matrix, var_col)
+    # var_col <- get_variable_col(conc, rcmip2hector_lut, rundates, varname='CH4_constrain')
+    # output_matrix <- add_list_2_matrix(output_matrix, var_col)
+    output_matrix <- process_var(emit, rcmip2hector_lut, output_matrix, rundates, varname='CH4_constrain')
   }
 
-  # OH and ozone
+  # --- OH and ozone ---
   nox_emit <- subset_hector_var(input_sub, rcmip2hector_lut, "NOX_emissions")
   co_emit  <- subset_hector_var(input_sub, rcmip2hector_lut, "CO_emissions")
   voc_emit <- subset_hector_var(input_sub, rcmip2hector_lut, "NMVOC_emissions")
   if (nrow(nox_emit) && nrow(co_emit) && nrow(voc_emit)) {
     # Only set these if all three are present
-    var_col <- get_variable_col(nox_emit, rcmip2hector_lut, rundates, varname='ffi_emissions')
-    output_matrix <- add_list_2_matrix(output_matrix, var_col)
-    var_col <- get_variable_col(co_emit, rcmip2hector_lut, rundates, varname='ffi_emissions')
-    output_matrix <- add_list_2_matrix(output_matrix, var_col)
-    var_col <- get_variable_col(voc_emit, rcmip2hector_lut, rundates, varname='ffi_emissions')
-    output_matrix <- add_list_2_matrix(output_matrix, var_col)
+    # var_col <- get_variable_col(nox_emit, rcmip2hector_lut, rundates, varname='NOX_emissions')
+    # output_matrix <- add_list_2_matrix(output_matrix, var_col)
+    output_matrix <- process_var(emit, rcmip2hector_lut, output_matrix, rundates, varname='NOX_emissions')
+    # var_col <- get_variable_col(co_emit, rcmip2hector_lut, rundates, varname='CO_emissions')
+    # output_matrix <- add_list_2_matrix(output_matrix, var_col)
+    output_matrix <- process_var(emit, rcmip2hector_lut, output_matrix, rundates, varname='CO_emissions')
+    # var_col <- get_variable_col(voc_emit, rcmip2hector_lut, rundates, varname='NMVOC_emissions')
+    # output_matrix <- add_list_2_matrix(output_matrix, var_col)
+    output_matrix <- process_var(emit, rcmip2hector_lut, output_matrix, rundates, varname='NMVOC_emissions')
   }
 
-  # N2O
+  # --- N2O ---
   emit <- subset_hector_var(input_sub, rcmip2hector_lut, "N2O_emissions")
   conc <- subset_hector_var(input_sub, rcmip2hector_lut, "N2O_constrain")
   if (nrow(emit)) {
-    var_col <- get_variable_col(emit, rcmip2hector_lut, rundates, varname='ffi_emissions')
-    output_matrix <- add_list_2_matrix(output_matrix, var_col)
+    # var_col <- get_variable_col(emit, rcmip2hector_lut, rundates, varname='N2O_emissions')
+    # output_matrix <- add_list_2_matrix(output_matrix, var_col)
+    output_matrix <- process_var(emit, rcmip2hector_lut, output_matrix, rundates, varname='N2O_emissions')
   } else if (nrow(conc)) {
-    var_col <- get_variable_col(conc, rcmip2hector_lut, rundates, varname='ffi_emissions')
-    output_matrix <- add_list_2_matrix(output_matrix, var_col)
+    # var_col <- get_variable_col(conc, rcmip2hector_lut, rundates, varname='N2O_constrain')
+    # output_matrix <- add_list_2_matrix(output_matrix, var_col)
+    output_matrix <- process_var(emit, rcmip2hector_lut, output_matrix, rundates, varname='N2O_constrain')
   }
 
-  # Variables that can be handled naively
+  # --- Variables that can be handled naively ---
   # NOTE: All of these will assume a default value of zero
   naive_vars <- c(
     "Ftalbedo", "SO2_emissions", "SV",
@@ -148,13 +146,12 @@ generate_emissions <- function(scenario, outpath = NULL) {
     dat <- subset_hector_var(input_sub, rcmip2hector_lut, v)
     if (nrow(dat) > 0) {
       tryCatch(
-        var_col <- get_variable_col(dat, rcmip2hector_lut, rundates, varname='ffi_emissions'),
+        output_matrix <- process_var(dat, rcmip2hector_lut, output_matrix, rundates, varname=v),
         error = function(e) {
           stop("Hit the following error on variable ", v, ":\n",
                conditionMessage(e))
         }
       )
-      output_matrix <- add_list_2_matrix(output_matrix, var_col)
     } else {
       warning("Scenario ", scenario, " has no data for ", v, ". ",
               "Using default value.")
@@ -195,7 +192,7 @@ generate_emissions <- function(scenario, outpath = NULL) {
     indat <- input_sub %>%
       dplyr::filter(Variable == !!i_rcmip_var)
     tryCatch(
-      var_col <- get_variable_col(indat, rcmip2hector_lut, rundates, varname='ffi_emissions'),
+      output_matrix <- process_var(indat, rcmip2hector_lut, output_matrix, rundates, varname=i_hector_var),
       error = function(e) {
         stop(
           "Error setting Hector variable ", i_hector_var,
@@ -203,8 +200,8 @@ generate_emissions <- function(scenario, outpath = NULL) {
         )
       }
     )
-    output_matrix <- add_list_2_matrix(output_matrix, var_col)
   }
+  matrix_to_csv(output_matrix, scenario, outpath)
   invisible(maxyear)
 }
 
@@ -232,6 +229,7 @@ get_rcmip_inputs <- function(targetfile = NULL) {
 #' @param year_min Integer; Minimum Hector year
 #' @param year_max Integer; Maximum Hector year
 #' @return filtered/subsetted RCMIP input dataframe, invisibly
+#' @author Matt Nicholson
 filter_rcmip_inputs <- function(rcmip_inputs, scenario, year_min, year_max) {
   input_sub <- rcmip_inputs %>%
     dplyr::filter(
@@ -273,8 +271,7 @@ subset_hector_var <- function(input_data, var_lut, hector_var) {
   result
 }
 
-# TODO rename function ("stash_variable"?)
-#' Set Hector variable to RCMIP data
+#' Create an emissions file column for a given variable
 #'
 #' @param input_data `data.frame` of RCMIP inputs for a specific scenario.
 #' @param hector_vars RCMIP to Hector variable conversion table
@@ -282,7 +279,7 @@ subset_hector_var <- function(input_data, var_lut, hector_var) {
 #'   `input_data`.
 #' @param interpolate (Logical) If `TRUE` (default), interpolate incomplete time
 #'   series using [stats::approxfun()]
-#' @return `core`, invisibly
+#' @return List representation of the variable matrix column
 #' @author Alexey Shiklomanov, Matt Nicholson
 #' @export
 get_variable_col <- function(input_data, hector_vars, rundates,
@@ -336,11 +333,31 @@ interpolate_var <- function(dat) {
   dat
 }
 
+#' Wrapper for get_variable_col() and add_list_2_matrix()
+#'
+#' @param input_data `data.frame` of RCMIP inputs for a specific scenario.
+#' @param hector_vars RCMIP to Hector variable conversion table
+#' @param output_matrix Emissions matrix
+#' @param varname RCMIP variable name (optional). Defaults to unique `Variable` in
+#'   `input_data`.
+#' @param ... Parameters to pass on to add_list_2_matrix() (e.i., interpolate)
+#' @return emissions matrix
+#' @author Matt Nicholson
+#' @export
+process_var <- function(input_data, hector_vars, output_matrix, rundates,
+                        varname = NULL, ...) {
+  args <- list(...)
+  if (is.null((args$interpolate))) { args$interpolate = TRUE }
+  var_col  <- get_variable_col(input_data, hector_vars, rundates, varname, args$interpolate)
+  out_matr <- add_list_2_matrix(output_matrix, var_col)
+}
+
 #' Get a list representing the metadata column of the output dataframe
 #'
 #' @param scenario Character vector; Scenario of the emissions file being generated
 #' @param rundates Integer vector; Dates to generate emissions for
 #' @return List representing the left-most column of the output emissions dataframe, invisibly
+#' @author Matt Nicholson
 get_meta_col <- function(scenario, rundates) {
   # Metadata & date column for the output dataframe
   meta_col <- c(paste0("; ", scenario , " emissions"),
@@ -356,6 +373,7 @@ get_meta_col <- function(scenario, rundates) {
 #' @param list1
 #' @param list2
 #' @return a matrix
+#' @author Matt Nicholson
 lists_2_matrix <- function(list1, list2) {
   ret_val <- cbind(list1, list2)
   invisible(ret_val)
@@ -366,7 +384,34 @@ lists_2_matrix <- function(list1, list2) {
 #' @param matr Matrix
 #' @param lst List to add to the matrix
 #' @return matrix
+#' @author Matt Nicholson
 add_list_2_matrix <- function(matr, lst) {
   matr <- cbind(matr, lst)
   invisible(matr)
+}
+
+#' Write the emissions matrix to csv
+#'
+#' @param output_matrix Matrix containing emissions data
+#' @param scenario Scenario corresponding to the emissions data
+#' @param outpath Path of the directory to write the output (optional). Default
+#'   path is inst/input/emissions.
+#' @return Absolute path of the output csv file (invisibly)
+#' @author Matt Nicholson
+matrix_to_csv <- function(output_matrix, scenario, outpath = NULL) {
+  # TODO outpath construction also handled in generate_emissions()
+  # but leave in for now for testing
+  if (is.null(outpath)) {
+    outpath <- file.path("inst", "input", "emissions")
+    dir.create(outpath, showWarnings = FALSE, recursive = TRUE)
+  }
+  # Create the filename of the output emissions file
+  scenario <- toupper(scenario)
+  scenario <- gsub("_", "", scenario)
+  f_name <- paste0(scenario, "_emissions.csv")
+  f_path <- file.path(outpath, f_name)
+  # Remove matrix column names
+  colnames(output_matrix) <- NULL
+  write.table(output_matrix, file=f_path, sep=",", col.names=NA, row.names = FALSE)
+  invisible(f_path)
 }
