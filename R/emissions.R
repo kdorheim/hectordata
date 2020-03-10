@@ -12,7 +12,7 @@
 #' @return quien sabe
 #' @author Matt Nicholson
 #' @export
-generate_emissions <- function(scenario, outpath = NULL) {
+generate_emissions <- function(scenario, outpath = NULL, debug = FALSE) {
   if (is.null(outpath)) {
     outpath <- file.path("inst", "input", "emissions")
     dir.create(outpath, showWarnings = FALSE, recursive = TRUE)
@@ -201,8 +201,10 @@ generate_emissions <- function(scenario, outpath = NULL) {
       }
     )
   }
-  matrix_to_csv(output_matrix, scenario, outpath)
-  invisible(maxyear)
+  if (!debug) {
+    matrix_to_csv(output_matrix, scenario, outpath)
+  }
+  invisible(outpath)
 }
 
 #' Long RCMIP inputs data.frame

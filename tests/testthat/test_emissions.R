@@ -68,7 +68,7 @@ test_that("Metadata column and FFI column have same length", {
   expect_equal(length(ffi_col), length(meta_col))
 })
 
-test_that("Create matrix from metadata & ffi columns", {
+test_that("Create matrix from metadata, ffi, & luc columns", {
   scenario <- "rcp60"
   variable <- "ffi_emissions"
   var_col  <- helper_var_col(scenario, variable)
@@ -78,11 +78,16 @@ test_that("Create matrix from metadata & ffi columns", {
   output_matr <- lists_2_matrix(meta_col, ffi_col)
   expect_equal(class(output_matr), "matrix")
   expect_true(all(dim(output_matr) == c(340, 2)))
-  # Add luc_emissions and re-check
+  # --- Add luc_emissions column and re-check ---
   var_col <- helper_var_col(scenario, "luc_emissions")
   luc_col <- var_col$v_col
   output_matr <- add_list_2_matrix(output_matr, luc_col)
   expect_equal(class(output_matr), "matrix")
+  expect_equal(output_matr[[4, 1]], as.character(rundates[1]))     # First year
+  expect_equal(output_matr[[340, 1]], as.character(rundates[336])) # Last year
   expect_true(all(dim(output_matr) == c(340, 3)))
+  expect_true(all(output_matr[1,] == c("; rcp60 emissions", "", "")))
+  expect_true(all(output_matr[3,] == c(";UNITS:", "PgC year-1", "PgC year-1")))
+  expect_true(all(output_matr[4,] == c("Date", "ffi_emissions", "luc_emissions")))
 })
 

@@ -34,29 +34,29 @@ helper_var_col <- function(scenario, var_name) {
 # print(output_matr)
 
 # === Ellipses argument passing to subfunction =================================
-func_a <- function(scenario, year_first, year_last) {
-  print('In func_a')
-  scenario <- toupper(scenario)
-  scenario <- gsub("_", "", scenario)
-  f_name <- paste0(scenario, "_emissions.csv")
-  func_b(scenario, year_first, year_last, em_fname=f_name)#, interpolate=T)
-}
-
-func_b <- function(scenario, year_first, year_last, ...) {
-  print('In func_b')
-  args <- list(...)
-  if (is.null((args$interpolate))) {args$interpolate = TRUE}
-  print(args$em_fname)
-  func_c(scenario, args$em_fname, args$interpolate)
-}
-
-func_c <- function(scenario, em_fname, interpolate=TRUE) {
-  print('In func_c')
-  print(paste0('Emissions filename: ', em_fname))
-  if (interpolate) {
-    print('Interpolating!')
-  }
-}
-
-func_a(scenario, year_start, year_end)
+# func_a <- function(scenario, year_first, year_last) {
+#   print('In func_a')
+#   scenario <- toupper(scenario)
+#   scenario <- gsub("_", "", scenario)
+#   f_name <- paste0(scenario, "_emissions.csv")
+#   func_b(scenario, year_first, year_last, em_fname=f_name)#, interpolate=T)
+# }
+#
+# func_b <- function(scenario, year_first, year_last, ...) {
+#   print('In func_b')
+#   args <- list(...)
+#   if (is.null((args$interpolate))) {args$interpolate = TRUE}
+#   print(args$em_fname)
+#   func_c(scenario, args$em_fname, args$interpolate)
+# }
+#
+# func_c <- function(scenario, em_fname, interpolate=TRUE) {
+#   print('In func_c')
+#   print(paste0('Emissions filename: ', em_fname))
+#   if (interpolate) {
+#     print('Interpolating!')
+#   }
+# }
+#
+# func_a(scenario, year_start, year_end)
 
