@@ -403,8 +403,6 @@ matrix_to_csv <- function(output_matrix, scenario, outpath = NULL) {
   scenario <- gsub("_", "", scenario)
   f_name <- paste0(scenario, "_emissions.csv")
   f_path <- file.path(outpath, f_name)
-  # Remove matrix column names
-  colnames(output_matrix) <- NULL
   write.table(output_matrix, file=f_path, sep=",", quote=FALSE, col.names=FALSE,
               row.names=FALSE)
   invisible(f_path)
