@@ -60,7 +60,7 @@ generate_emissions <- function(scenario, outpath = NULL, debug = FALSE) {
   }
 
   # Metadata column of the output Hector emissions dataframe
-  output_meta_col <- get_meta_col(scenario, rundates)
+  # output_meta_col <- get_meta_col(scenario, rundates)
 
   # --- CO2 ---
   ffi <- subset_hector_var(input_sub, rcmip2hector_lut, "ffi_emissions")
@@ -69,13 +69,15 @@ generate_emissions <- function(scenario, outpath = NULL, debug = FALSE) {
 
   if (nrow(ffi) && nrow(luc)) {
     # Use FFI and LUC emissions
-    var_col <- get_variable_col(ffi, rcmip2hector_lut, rundates)
+    output_meta_col <- get_meta_col(scenario, ffi$year)
+    var_col <- get_variable_col(ffi, rcmip2hector_lut)
     output_matrix <- lists_2_matrix(output_meta_col, var_col)
-    var_col <- get_variable_col(luc, rcmip2hector_lut, rundates)
+    var_col <- get_variable_col(luc, rcmip2hector_lut)
     output_matrix <- add_list_2_matrix(output_matrix, var_col)
   } else if (nrow(co2)) {
     # Use CO2 concentrations
-    var_col <- get_variable_col(co2_conc, rcmip2hector_lut, rundates)
+    output_meta_col <- get_meta_col(scenario, co2_conc$year)
+    var_col <- get_variable_col(co2_conc, rcmip2hector_lut)
     output_matrix <- lists_2_matrix(output_matrix, var_col)
     maxco2 <- 3500
     if (any(co2_conc$value > maxco2)) {
@@ -96,9 +98,9 @@ generate_emissions <- function(scenario, outpath = NULL, debug = FALSE) {
   emit <- subset_hector_var(input_sub, rcmip2hector_lut, "CH4_emissions")
   conc <- subset_hector_var(input_sub, rcmip2hector_lut, "CH4_constrain")
   if (nrow(emit)) {
-    output_matrix <- process_var(emit, rcmip2hector_lut, output_matrix, rundates)
+    output_matrix <- process_var(emit, rcmip2hector_lut, output_matrix)
   } else if (nrow(conc)) {
-    output_matrix <- process_var(emit, rcmip2hector_lut, output_matrix, rundates)
+    output_matrix <- process_var(emit, rcmip2hector_lut, output_matrix)
   }
 
   # --- OH and ozone ---
@@ -107,18 +109,18 @@ generate_emissions <- function(scenario, outpath = NULL, debug = FALSE) {
   voc_emit <- subset_hector_var(input_sub, rcmip2hector_lut, "NMVOC_emissions")
   if (nrow(nox_emit) && nrow(co_emit) && nrow(voc_emit)) {
     # Only set these if all three are present
-    output_matrix <- process_var(nox_emit, rcmip2hector_lut, output_matrix, rundates)
-    output_matrix <- process_var(co_emit, rcmip2hector_lut, output_matrix, rundates)
-    output_matrix <- process_var(voc_emit, rcmip2hector_lut, output_matrix, rundates)
+    output_matrix <- process_var(nox_emit, rcmip2hector_lut, output_matrix)
+    output_matrix <- process_var(co_emit, rcmip2hector_lut, output_matrix)
+    output_matrix <- process_var(voc_emit, rcmip2hector_lut, output_matrix)
   }
 
   # --- N2O ---
   emit <- subset_hector_var(input_sub, rcmip2hector_lut, "N2O_emissions")
   conc <- subset_hector_var(input_sub, rcmip2hector_lut, "N2O_constrain")
   if (nrow(emit)) {
-    output_matrix <- process_var(emit, rcmip2hector_lut, output_matrix, rundates)
+    output_matrix <- process_var(emit, rcmip2hector_lut, output_matrix)
   } else if (nrow(conc)) {
-    output_matrix <- process_var(emit, rcmip2hector_lut, output_matrix, rundates)
+    output_matrix <- process_var(emit, rcmip2hector_lut, output_matrix)
   }
 
   # --- Variables that can be handled naively ---
@@ -131,7 +133,7 @@ generate_emissions <- function(scenario, outpath = NULL, debug = FALSE) {
     dat <- subset_hector_var(input_sub, rcmip2hector_lut, v)
     if (nrow(dat) > 0) {
       tryCatch(
-        output_matrix <- process_var(dat, rcmip2hector_lut, output_matrix, rundates),
+        output_matrix <- process_var(dat, rcmip2hector_lut, output_matrix),
         error = function(e) {
           stop("Hit the following error on variable ", v, ":\n",
                conditionMessage(e))
@@ -177,7 +179,7 @@ generate_emissions <- function(scenario, outpath = NULL, debug = FALSE) {
     indat <- input_sub %>%
       dplyr::filter(Variable == !!i_rcmip_var)
     tryCatch(
-      output_matrix <- process_var(indat, rcmip2hector_lut, output_matrix, rundates),
+      output_matrix <- process_var(indat, rcmip2hector_lut, output_matrix),
       error = function(e) {
         stop(
           "Error setting Hector variable ", i_hector_var,
@@ -261,6 +263,22 @@ subset_hector_var <- function(input_data, var_lut, hector_var) {
   result
 }
 
+#' Get a list representing the metadata column of the output dataframe
+#'
+#' @param scenario Character vector; Scenario of the emissions file being generated
+#' @param rundates Integer vector; Dates to generate emissions for
+#' @return List representing the left-most column of the output emissions dataframe, invisibly
+#' @author Matt Nicholson
+get_meta_col <- function(scenario, rundates) {
+  # Metadata & date column for the output dataframe
+  meta_col <- c(paste0("; ", scenario , " emissions"),
+                paste0("; Produced by Hectordata R package"),
+                ";UNITS:",
+                "Date",
+                rundates)
+  invisible(meta_col)
+}
+
 #' Create an emissions file column for a given variable
 #'
 #' @param input_data `data.frame` of RCMIP inputs for a specific scenario.
@@ -272,7 +290,7 @@ subset_hector_var <- function(input_data, var_lut, hector_var) {
 #' @return List representation of the variable matrix column
 #' @author Alexey Shiklomanov, Matt Nicholson
 #' @export
-get_variable_col <- function(input_data, hector_vars, rundates,
+get_variable_col <- function(input_data, hector_vars,
                              varname = NULL,
                              interpolate = TRUE) {
   if (!(nrow(input_data) > 0)) {
@@ -337,28 +355,12 @@ interpolate_var <- function(dat) {
 #' @return emissions matrix
 #' @author Matt Nicholson
 #' @export
-process_var <- function(input_data, hector_vars, output_matrix, rundates,
+process_var <- function(input_data, hector_vars, output_matrix,
                         varname = NULL, ...) {
   args <- list(...)
   if (is.null((args$interpolate))) { args$interpolate = TRUE }
-  var_col  <- get_variable_col(input_data, hector_vars, rundates, varname, args$interpolate)
+  var_col  <- get_variable_col(input_data, hector_vars, varname=varname, interpolate=args$interpolate)
   out_matr <- add_list_2_matrix(output_matrix, var_col)
-}
-
-#' Get a list representing the metadata column of the output dataframe
-#'
-#' @param scenario Character vector; Scenario of the emissions file being generated
-#' @param rundates Integer vector; Dates to generate emissions for
-#' @return List representing the left-most column of the output emissions dataframe, invisibly
-#' @author Matt Nicholson
-get_meta_col <- function(scenario, rundates) {
-  # Metadata & date column for the output dataframe
-  meta_col <- c(paste0("; ", scenario , " emissions"),
-                paste0("; Produced by Hectordata R package"),
-                ";UNITS:",
-                "Date",
-                rundates)
-  invisible(meta_col)
 }
 
 #' Combine two lists into a matrix. The lists are treated as column vectors
