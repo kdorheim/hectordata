@@ -10,6 +10,16 @@ Description: A package to manage input for the simple climate model Hector. It
 License: GPL-3
 Encoding: UTF-8
 Depends: R (>= 2.10)
+Imports:
+    devtools,
+    fst,
+    fuzzyjoin,
+    here,
+    magrittr,
+    readr,
+    tibble,
+    tidyr,
+    udunits2
 Suggests:
     testthat
 LazyData: true
