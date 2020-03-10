@@ -392,8 +392,6 @@ add_list_2_matrix <- function(matr, lst) {
 #' @return Absolute path of the output csv file (invisibly)
 #' @author Matt Nicholson
 matrix_to_csv <- function(output_matrix, scenario, outpath = NULL) {
-  # TODO outpath construction also handled in generate_emissions()
-  # but leave in for now for testing
   if (is.null(outpath)) {
     outpath <- file.path("inst", "input", "emissions")
     dir.create(outpath, showWarnings = FALSE, recursive = TRUE)
