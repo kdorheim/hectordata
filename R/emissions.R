@@ -12,7 +12,7 @@
 #' @return quien sabe
 #' @author Matt Nicholson
 #' @export
-generate_emissions <- function(scenario, outpath = NULL, debug = FALSE) {
+generate_emissions <- function(scenario, outpath = NULL, interpolate = TRUE, debug = FALSE) {
   if (is.null(outpath)) {
     outpath <- file.path("inst", "input", "emissions")
   }
@@ -69,12 +69,12 @@ generate_emissions <- function(scenario, outpath = NULL, debug = FALSE) {
     output_meta_col <- get_meta_col(scenario, ffi$year)
     var_col <- get_variable_col(ffi, rcmip2hector_lut)
     output_matrix <- lists_2_matrix(output_meta_col, var_col)
-    var_col <- get_variable_col(luc, rcmip2hector_lut)
+    var_col <- get_variable_col(luc, rcmip2hector_lut, interpolate=interpolate)
     output_matrix <- add_list_2_matrix(output_matrix, var_col)
   } else if (nrow(co2)) {
     # Use CO2 concentrations
     output_meta_col <- get_meta_col(scenario, co2_conc$year)
-    var_col <- get_variable_col(co2_conc, rcmip2hector_lut)
+    var_col <- get_variable_col(co2_conc, rcmip2hector_lut, interpolate=interpolate)
     output_matrix <- lists_2_matrix(output_matrix, var_col)
     maxco2 <- 3500
     if (any(co2_conc$value > maxco2)) {
@@ -95,9 +95,9 @@ generate_emissions <- function(scenario, outpath = NULL, debug = FALSE) {
   emit <- subset_hector_var(input_sub, rcmip2hector_lut, "CH4_emissions")
   conc <- subset_hector_var(input_sub, rcmip2hector_lut, "CH4_constrain")
   if (nrow(emit)) {
-    output_matrix <- process_var(emit, rcmip2hector_lut, output_matrix)
+    output_matrix <- process_var(emit, rcmip2hector_lut, output_matrix, interpolate=interpolate)
   } else if (nrow(conc)) {
-    output_matrix <- process_var(emit, rcmip2hector_lut, output_matrix)
+    output_matrix <- process_var(emit, rcmip2hector_lut, output_matrix, interpolate=interpolate)
   }
 
   # --- OH and ozone ---
@@ -106,18 +106,18 @@ generate_emissions <- function(scenario, outpath = NULL, debug = FALSE) {
   voc_emit <- subset_hector_var(input_sub, rcmip2hector_lut, "NMVOC_emissions")
   if (nrow(nox_emit) && nrow(co_emit) && nrow(voc_emit)) {
     # Only set these if all three are present
-    output_matrix <- process_var(nox_emit, rcmip2hector_lut, output_matrix)
-    output_matrix <- process_var(co_emit, rcmip2hector_lut, output_matrix)
-    output_matrix <- process_var(voc_emit, rcmip2hector_lut, output_matrix)
+    output_matrix <- process_var(nox_emit, rcmip2hector_lut, output_matrix, interpolate=interpolate)
+    output_matrix <- process_var(co_emit, rcmip2hector_lut, output_matrix, interpolate=interpolate)
+    output_matrix <- process_var(voc_emit, rcmip2hector_lut, output_matrix, interpolate=interpolate)
   }
 
   # --- N2O ---
   emit <- subset_hector_var(input_sub, rcmip2hector_lut, "N2O_emissions")
   conc <- subset_hector_var(input_sub, rcmip2hector_lut, "N2O_constrain")
   if (nrow(emit)) {
-    output_matrix <- process_var(emit, rcmip2hector_lut, output_matrix)
+    output_matrix <- process_var(emit, rcmip2hector_lut, output_matrix, interpolate=interpolate)
   } else if (nrow(conc)) {
-    output_matrix <- process_var(emit, rcmip2hector_lut, output_matrix)
+    output_matrix <- process_var(emit, rcmip2hector_lut, output_matrix, interpolate=interpolate)
   }
 
   # --- Variables that can be handled naively ---
@@ -130,7 +130,7 @@ generate_emissions <- function(scenario, outpath = NULL, debug = FALSE) {
     dat <- subset_hector_var(input_sub, rcmip2hector_lut, v)
     if (nrow(dat) > 0) {
       tryCatch(
-        output_matrix <- process_var(dat, rcmip2hector_lut, output_matrix),
+        output_matrix <- process_var(dat, rcmip2hector_lut, output_matrix, interpolate=interpolate),
         error = function(e) {
           stop("Hit the following error on variable ", v, ":\n",
                conditionMessage(e))
@@ -176,7 +176,7 @@ generate_emissions <- function(scenario, outpath = NULL, debug = FALSE) {
     indat <- input_sub %>%
       dplyr::filter(Variable == !!i_rcmip_var)
     tryCatch(
-      output_matrix <- process_var(indat, rcmip2hector_lut, output_matrix),
+      output_matrix <- process_var(indat, rcmip2hector_lut, output_matrix, interpolate=interpolate),
       error = function(e) {
         stop(
           "Error setting Hector variable ", i_hector_var,
