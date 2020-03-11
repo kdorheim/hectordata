@@ -270,12 +270,12 @@ subset_hector_var <- function(input_data, var_lut, hector_var) {
 #' @return List representing the left-most column of the output emissions dataframe, invisibly
 #' @author Matt Nicholson
 get_meta_col <- function(scenario, rundates) {
-  # Metadata & date column for the output dataframe
+  yrs <- interpolate_years(rundates)
   meta_col <- c(paste0("; ", scenario , " emissions"),
                 paste0("; Produced by Hectordata R package"),
                 ";UNITS:",
                 "Date",
-                rundates)
+                yrs)
   invisible(meta_col)
 }
 
@@ -342,6 +342,20 @@ interpolate_var <- function(dat) {
     dat <- tibble::tibble(!!!dat_l)
   }
   dat
+}
+
+#' Interpolate a range of years
+#'
+#' @param yrs List of years to interpolate
+#' @return List of years
+#' @author Matt Nicholson
+interpolate_years <- function(yrs) {
+  if (any(diff(yrs) > 1)) {
+    ret_val <- seq(min(yrs), max(yrs))
+  } else {
+    ret_val <- yrs
+  }
+  invisible(ret_val)
 }
 
 #' Wrapper for get_variable_col() and add_list_2_matrix()
