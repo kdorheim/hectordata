@@ -59,9 +59,6 @@ generate_emissions <- function(scenario, outpath = NULL, debug = FALSE) {
       tidyr::pivot_longer(-year, names_to = "Variable", values_to = "value")
   }
 
-  # Metadata column of the output Hector emissions dataframe
-  # output_meta_col <- get_meta_col(scenario, rundates)
-
   # --- CO2 ---
   ffi <- subset_hector_var(input_sub, rcmip2hector_lut, "ffi_emissions")
   luc <- subset_hector_var(input_sub, rcmip2hector_lut, "luc_emissions")
