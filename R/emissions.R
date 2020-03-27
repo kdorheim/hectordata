@@ -197,7 +197,7 @@ generate_emissions <- function(scenario, outpath = NULL, interpolate = TRUE, deb
 #' @export
 get_rcmip_inputs <- function(targetfile = NULL) {
   if (is.null(targetfile)) {
-    targetfile <- here::here("inst", "rcmip-inputs.fst")
+    targetfile <- system.file("inst/rcmip-inputs.fst", package = 'hectordata')
   }
   # Constructed targetfile is now "C:/Users/nich980/code/inst/rcmip-inputs.fst" ???????
   stopifnot(file.exists(targetfile))
@@ -228,7 +228,7 @@ filter_rcmip_inputs <- function(rcmip_inputs, scenario, year_min, year_max) {
 #' @return dataframe
 #' @author Alexey Shiklomanov
 rcmip2hector_df <- function() {
-  lut_file <- here::here("inst", "variable-conversion.csv")
+  lut_file <- system.file("inst/variable-conversion.csv", package = 'hectordata')
   lut <- readr::read_csv(lut_file, col_types = readr::cols(.default = "c"))
   invisible(lut)
 }
