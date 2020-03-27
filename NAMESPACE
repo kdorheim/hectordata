@@ -2,7 +2,12 @@
 
 export(check_emissions_file)
 export(create_scenario_ini)
+export(generate_emissions)
+export(get_variable_col)
 export(parse_emission_fname)
 export(parse_ini_fname)
+export(process_var)
 export(replace_ini_vars)
+export(subset_hector_var)
 export(write_file)
+importFrom(magrittr,"%>%")

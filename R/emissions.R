@@ -8,7 +8,10 @@
 #'
 #' @param scenario Character vector; Scenario to generate an emissions file for.
 #' @param outpath Character vector, optional; Directory to write the created emissions file to.
-#'   If not given, the file will be written to inst/input/emissions
+#'   If not given, the file will be written to inst/input/emissions.
+#' @param interpolate Whether or not to interpolate the emissions. Default is TRUE.
+#' @param debug If TRUE, the emissions file will not be written and the emissions
+#'   matrix will be returned. Default is FALSE.
 #' @return quien sabe
 #' @author Matt Nicholson
 #' @export
@@ -45,16 +48,6 @@ generate_emissions <- function(scenario, outpath = NULL, interpolate = TRUE, deb
         is.double,
         ~approxfun(year, .x, rule = 2)(year)
       )
-    if (scenario %in% abrupt_scenarios) {
-      c0 <- hector::fetchvars(hc, hector::startdate(hc), "Ca")[["value"]]
-      input_wide <- input_wide %>%
-        dplyr::mutate(
-          `Atmospheric Concentrations|CO2` = dplyr::case_when(
-            year < min(input_sub$year) ~ c0,
-            TRUE ~ `Atmospheric Concentrations|CO2`
-          )
-        )
-    }
     input_sub <- input_wide %>%
       tidyr::pivot_longer(-year, names_to = "Variable", values_to = "value")
   }
@@ -206,6 +199,7 @@ get_rcmip_inputs <- function(targetfile = NULL) {
   if (is.null(targetfile)) {
     targetfile <- here::here("inst", "rcmip-inputs.fst")
   }
+  # Constructed targetfile is now "C:/Users/nich980/code/inst/rcmip-inputs.fst" ???????
   stopifnot(file.exists(targetfile))
   fst::read_fst(targetfile) %>%
     tibble::as_tibble()
@@ -376,8 +370,8 @@ process_var <- function(input_data, hector_vars, output_matrix,
 
 #' Combine two lists into a matrix. The lists are treated as column vectors
 #'
-#' @param list1
-#' @param list2
+#' @param list1 First list to combine.
+#' @param list2 Second list to combine.
 #' @return a matrix
 #' @author Matt Nicholson
 lists_2_matrix <- function(list1, list2) {
@@ -406,7 +400,7 @@ add_list_2_matrix <- function(matr, lst) {
 #' @author Matt Nicholson
 matrix_to_csv <- function(output_matrix, scenario, outpath = NULL) {
   if (is.null(outpath)) {
-    outpath <- file.path("inst", "input", "emissions")
+    outpath <- here::here("inst", "input", "emissions")
     dir.create(outpath, showWarnings = FALSE, recursive = TRUE)
   }
   # Create the filename of the output emissions file
