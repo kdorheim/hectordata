@@ -416,5 +416,6 @@ matrix_to_csv <- function(output_matrix, scenario, outpath = NULL) {
   f_path <- file.path(outpath, f_name)
   write.table(output_matrix, file=f_path, sep=",", quote=FALSE, col.names=FALSE,
               row.names=FALSE)
+  message(paste0("Emissions written to ", f_path))
   invisible(f_path)
 }
