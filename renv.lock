@@ -1,6 +1,6 @@
 {
   "R": {
-    "Version": "3.6.1",
+    "Version": "3.6.3",
     "Repositories": [
       {
         "Name": "CRAN",
@@ -22,6 +22,20 @@
       "Source": "Repository",
       "Repository": "CRAN",
       "Hash": "0e120603cc57e4f1d741f739aa8147ba"
+    },
+    "MASS": {
+      "Package": "MASS",
+      "Version": "7.3-51.5",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "9efe80472b21189ebab1b74169808c26"
+    },
+    "Matrix": {
+      "Package": "Matrix",
+      "Version": "1.2-18",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "08588806cba69f04797dab50627428ed"
     },
     "R6": {
       "Package": "R6",
@@ -222,12 +236,16 @@
     "fuzzyjoin": {
       "Package": "fuzzyjoin",
       "Version": "0.1.5",
-      "Source": "Repository"
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "75edd6bc22c7c9a654aaeabba4327179"
     },
     "geosphere": {
       "Package": "geosphere",
       "Version": "1.5-10",
-      "Source": "Repository"
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "eee36211f74e4dbc80eae9d504b58f0b"
     },
     "ggplot2": {
       "Package": "ggplot2",
@@ -334,6 +352,13 @@
       "Repository": "CRAN",
       "Hash": "6d927978fc658d24175ce37db635f9e5"
     },
+    "lattice": {
+      "Package": "lattice",
+      "Version": "0.20-40",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "61339152c288b871facca5f68f401f89"
+    },
     "lazyeval": {
       "Package": "lazyeval",
       "Version": "0.2.2",
@@ -362,6 +387,13 @@
       "Repository": "CRAN",
       "Hash": "58baa74e4603fcfb9a94401c58c8f9b1"
     },
+    "mgcv": {
+      "Package": "mgcv",
+      "Version": "1.8-31",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "4bb7e0c4f3557583e1e8d3c9ffb8ba5c"
+    },
     "mime": {
       "Package": "mime",
       "Version": "0.9",
@@ -375,6 +407,13 @@
       "Source": "Repository",
       "Repository": "CRAN",
       "Hash": "6dfe8bf774944bd5595785e3229d8771"
+    },
+    "nlme": {
+      "Package": "nlme",
+      "Version": "3.1-145",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "0ed9365684dc39cdd0bb5bd2f316dc67"
     },
     "openssl": {
       "Package": "openssl",
@@ -575,12 +614,16 @@
     "sp": {
       "Package": "sp",
       "Version": "1.4-1",
-      "Source": "Repository"
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "a44a3cebab900c0f77e16804f361468e"
     },
     "stringdist": {
       "Package": "stringdist",
       "Version": "0.9.5.5",
-      "Source": "Repository"
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "734fb9c45f9a36bcd1f1aa0c37a8a5b1"
     },
     "stringi": {
       "Package": "stringi",
@@ -620,7 +663,9 @@
     "tidyr": {
       "Package": "tidyr",
       "Version": "1.0.2",
-      "Source": "Repository"
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "fb73a010ace00d6c584c2b53a21b969c"
     },
     "tidyselect": {
       "Package": "tidyselect",
@@ -632,7 +677,9 @@
     "udunits2": {
       "Package": "udunits2",
       "Version": "0.13",
-      "Source": "Repository"
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "384a738869cafd50c5fcf63003d7ccf3"
     },
     "usethis": {
       "Package": "usethis",
